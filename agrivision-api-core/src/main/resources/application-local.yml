@@ -2,7 +2,7 @@ server:
   port: 4000
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/procurement
+    url: jdbc:postgresql://localhost:5432/agrivision
     username: postgres
     password: ${DB_PASSWORD}
     driverClassName: org.postgresql.Driver

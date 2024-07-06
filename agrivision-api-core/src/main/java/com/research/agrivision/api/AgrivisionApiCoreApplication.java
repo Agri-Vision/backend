@@ -1,9 +1,12 @@
-package com.research.agrivision.api.agrivisionapicore;
+package com.research.agrivision.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.Executor;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -16,6 +19,16 @@ public class AgrivisionApiCoreApplication {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Executor asyncExecutor() {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(2);
+		executor.setMaxPoolSize(2);
+		executor.setQueueCapacity(500);
+		executor.setThreadNamePrefix("JDAsync-");
+		executor.initialize();
+		return executor;
 	}
 
 }
