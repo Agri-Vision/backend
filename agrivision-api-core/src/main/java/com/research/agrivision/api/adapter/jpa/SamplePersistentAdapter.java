@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class SampleAdapter implements SaveSamplePort, GetSamplePort {
+public class SamplePersistentAdapter implements SaveSamplePort, GetSamplePort {
     private final SampleRepository sampleRepository;
 
     private ModelMapper mapper = new ModelMapper();
 
-    public SampleAdapter(SampleRepository sampleRepository) {
+    public SamplePersistentAdapter(SampleRepository sampleRepository) {
         this.sampleRepository = sampleRepository;
     }
 
