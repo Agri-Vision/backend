@@ -1,5 +1,6 @@
 package com.research.agrivision.business.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,8 @@ public class IotReading extends BaseEntity {
     private String soilMoisture;
     private String pressure;
     private String altitude;
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime recordedTime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate recordedDate;
 }
