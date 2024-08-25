@@ -1,6 +1,7 @@
 package com.research.agrivision.api.adapter.api.controller;
 
 import com.research.agrivision.api.adapter.api.response.CommonResponse;
+import com.research.agrivision.business.entity.Organization;
 import com.research.agrivision.business.entity.Sample;
 import com.research.agrivision.business.port.in.SampleUseCase;
 import com.research.agrivision.api.adapter.api.mapper.SampleMapper;
@@ -66,6 +67,12 @@ public class SampleController {
 
     @DeleteMapping("/sample/{id}")
     public ResponseEntity<CommonResponse> deleteSampleById(@PathVariable Long id) {
+        Sample sample = sampleService.getSampleById(id);
+
+        if (sample == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
         sampleService.deleteSampleById(id);
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse("Successfully deleted sample with id: " + id));
     }
