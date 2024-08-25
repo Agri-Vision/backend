@@ -16,6 +16,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class IotReading extends BaseEntity {
     private Long id;
+    private String iotId;
     private String temperature;
     private String humidity;
     private String uvLevel;
