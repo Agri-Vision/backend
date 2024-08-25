@@ -91,6 +91,18 @@ public class IotController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new CommonResponse("Success"));
     }
 
+    @GetMapping("/dashboard")
+    public ResponseEntity<List<IotReading>> getIotReadingByTimePeriod(@RequestParam String time) {
+        if (!time.equalsIgnoreCase("monthly") && !time.equalsIgnoreCase("weekly") && !time.equalsIgnoreCase("daily")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        List<IotReading> iotReadingList = iotService.getIotReadingByTimePeriod(time);
+        if (iotReadingList == null || iotReadingList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(iotReadingList);
+    }
+
     private List<IotReading> extractIotReadings(MultipartFile file) {
         try {
             String filename = file.getOriginalFilename();
@@ -111,6 +123,7 @@ public class IotController {
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 IotReading iotReading = new IotReading();
+                String iotId = getStringCellValue(row.getCell(0));
                 String temperature = getStringCellValue(row.getCell(1));
                 String humidity = getStringCellValue(row.getCell(2));
                 String uvLevel = getStringCellValue(row.getCell(3));
@@ -126,6 +139,7 @@ public class IotController {
                 LocalDate recordedDate = LocalDate.parse(getStringCellValue(row.getCell(8)), formatter);
                 iotReading.setRecordedDate(recordedDate);
 
+                iotReading.setIotId(iotId);
                 iotReading.setTemperature(temperature);
                 iotReading.setHumidity(humidity);
                 iotReading.setUvLevel(uvLevel);
