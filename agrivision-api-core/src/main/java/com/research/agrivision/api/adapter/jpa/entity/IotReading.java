@@ -12,6 +12,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 public class IotReading extends BaseEntity {
+    private String iotId;
     private BigDecimal temperature;
     private BigDecimal humidity;
     private BigDecimal uvLevel;

@@ -12,4 +12,6 @@ public interface IotUseCase {
     IotReading getIotReadingById(Long id);
 
     List<IotReading> getAllIotReadings();
+
+    List<IotReading> getIotReadingByTimePeriod(String time);
 }
