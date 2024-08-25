@@ -103,6 +103,12 @@ public class IotController {
         return ResponseEntity.ok(iotReadingList);
     }
 
+    @DeleteMapping()
+    public ResponseEntity<CommonResponse> deleteAllIotReadings() {
+        iotService.deleteAllIotReadings();
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse("Success"));
+    }
+
     private List<IotReading> extractIotReadings(MultipartFile file) {
         try {
             String filename = file.getOriginalFilename();
