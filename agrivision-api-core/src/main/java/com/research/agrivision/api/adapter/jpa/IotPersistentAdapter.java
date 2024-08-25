@@ -52,8 +52,8 @@ public class IotPersistentAdapter implements SaveIotPort, GetIotPort {
 
     @Override
     public List<IotReading> getIotReadingByTimePeriod(String time) {
-//        LocalDate today = LocalDate.now();
-        LocalDate today = LocalDate.of(2024, 7, 24);
+        LocalDate today = LocalDate.now();
+//        LocalDate today = LocalDate.of(2024, 7, 24);
         String timeLower = time.toLowerCase();
 
         LocalDate date = null;
