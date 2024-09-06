@@ -30,7 +30,7 @@ public class WebOdmController {
         this.webOdmService = webOdmUseCase;
     }
 
-    @PostMapping("/api/token-auth")
+    @GetMapping("/api/token-auth")
     public ResponseEntity<AuthenticationResponse> getAuthenticationToken() {
         AuthenticationRequest authenticationRequest = new AuthenticationRequest(username, password);
         AuthenticationResponse response = webOdmService.getAuthenticationToken(authenticationRequest);
