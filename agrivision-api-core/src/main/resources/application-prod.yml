@@ -20,3 +20,8 @@ spring:
 client:
   model: https://example-model-dep-workspa-ugqxl.eastus.inference.ml.azure.com
   model-token: ${TOKEN}
+
+web-odm:
+  username: DinukaKariyawasam
+  password: ${WEB_ODM_PASSWORD}
+  url: http://localhost:8000
