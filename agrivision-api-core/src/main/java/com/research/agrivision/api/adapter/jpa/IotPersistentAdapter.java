@@ -34,6 +34,11 @@ public class IotPersistentAdapter implements SaveIotPort, GetIotPort {
     }
 
     @Override
+    public void deleteAllIotReadings() {
+        iotReadingRepository.deleteAll();
+    }
+
+    @Override
     public IotReading getIotReadingById(Long id) {
         Optional<com.research.agrivision.api.adapter.jpa.entity.IotReading> iotReading = iotReadingRepository.findById(id);
         if (iotReading.isPresent()) {

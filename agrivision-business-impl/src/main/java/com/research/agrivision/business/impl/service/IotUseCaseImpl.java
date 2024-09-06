@@ -36,4 +36,9 @@ public class IotUseCaseImpl implements IotUseCase {
     public List<IotReading> getIotReadingByTimePeriod(String time) {
         return getIotPort.getIotReadingByTimePeriod(time);
     }
+
+    @Override
+    public void deleteAllIotReadings() {
+        saveIotPort.deleteAllIotReadings();
+    }
 }
