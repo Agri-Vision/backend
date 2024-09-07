@@ -20,7 +20,8 @@ public interface WebOdmClient {
                          @RequestHeader("Authorization") String authorizationHeader);
 
     @PostMapping("/api/projects/")
-    String createWebOdmProject(@RequestBody ProjectRequest projectRequest);
+    String createWebOdmProject(@RequestBody ProjectRequest projectRequest,
+                               @RequestHeader("Authorization") String authorizationHeader);
 
     @PostMapping(value = "/api/projects/{projectId}/tasks/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     String uploadTaskImagesAndOptions(@PathVariable String projectId,
