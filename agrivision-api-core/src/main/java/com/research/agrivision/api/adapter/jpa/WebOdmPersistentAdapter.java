@@ -6,10 +6,17 @@ import com.research.agrivision.business.entity.webodm.AuthenticationResponse;
 import com.research.agrivision.business.port.out.WebOdmPort;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WebOdmPersistentAdapter implements WebOdmPort {
+    @Value("${web-odm.username}")
+    private String username;
+
+    @Value("${web-odm.password}")
+    private String password;
+
     private final ModelMapper mapper = new ModelMapper();
 
     @Autowired
@@ -24,7 +31,17 @@ public class WebOdmPersistentAdapter implements WebOdmPort {
     }
 
     @Override
-    public String getWebOdmTask(String projectId, String taskId, String authorizationHeader) {
+    public String getWebOdmTask(String projectId, String taskId) {
+        String authorizationHeader = generateWebOdmAuthToken();
         return webOdmClient.getWebOdmTask(projectId, taskId, authorizationHeader);
+    }
+
+    private String generateWebOdmAuthToken() {
+        com.research.agrivision.api.adapter.integration.integrate.webodm.request.AuthenticationRequest authenticationRequest =
+                new com.research.agrivision.api.adapter.integration.integrate.webodm.request.AuthenticationRequest();
+        authenticationRequest.setUsername(username);
+        authenticationRequest.setPassword(password);
+        com.research.agrivision.api.adapter.integration.integrate.webodm.response.AuthenticationResponse authenticationResponse = webOdmClient.getAuthenticationToken(authenticationRequest);
+        return authenticationResponse.getToken();
     }
 }

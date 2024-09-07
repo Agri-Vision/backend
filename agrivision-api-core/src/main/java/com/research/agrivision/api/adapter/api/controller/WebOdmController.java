@@ -39,9 +39,8 @@ public class WebOdmController {
 
     @GetMapping("/api/projects/{projectId}/tasks/{taskId}/download/orthophoto.tif")
     public ResponseEntity<String> getAuthenticationToken(@PathVariable String projectId,
-                                                         @PathVariable String taskId,
-                                                         @RequestHeader("Authorization") String authorizationHeader) {
-        String response = webOdmService.getWebOdmTask(projectId, taskId, authorizationHeader);
+                                                         @PathVariable String taskId) {
+        String response = webOdmService.getWebOdmTask(projectId, taskId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
