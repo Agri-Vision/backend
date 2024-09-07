@@ -54,7 +54,8 @@ public class WebOdmPersistentAdapter implements WebOdmPort {
     public String createWebOdmProject(ProjectRequest projectRequest) {
         com.research.agrivision.api.adapter.integration.integrate.webodm.request.ProjectRequest proRequest =
                 mapper.map(projectRequest, com.research.agrivision.api.adapter.integration.integrate.webodm.request.ProjectRequest.class);
-        return webOdmClient.createWebOdmProject(proRequest);
+        String authorizationHeader = generateWebOdmAuthToken();
+        return webOdmClient.createWebOdmProject(proRequest, authorizationHeader);
     }
 
     @Override
