@@ -17,6 +17,11 @@ spring:
       format_sql: true
       dialect: org.hibernate.dialect.PostgreSQLDialect
 
+azure:
+  storage:
+    connection-string: DefaultEndpointsProtocol=https;AccountName=agrivis;AccountKey=${ACCOUNT_KEY};EndpointSuffix=core.windows.net
+    container-name: agrivis
+
 client:
   model: https://example-model-dep-workspa-ugqxl.eastus.inference.ml.azure.com
   model-token: ${TOKEN}
