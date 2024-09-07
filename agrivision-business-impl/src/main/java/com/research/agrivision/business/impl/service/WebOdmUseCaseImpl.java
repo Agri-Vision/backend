@@ -19,7 +19,7 @@ public class WebOdmUseCaseImpl implements WebOdmUseCase {
     }
 
     @Override
-    public String getWebOdmTask(String projectId, String taskId, String authorizationHeader) {
-        return webOdmPort.getWebOdmTask(projectId, taskId, authorizationHeader);
+    public String getWebOdmTask(String projectId, String taskId) {
+        return webOdmPort.getWebOdmTask(projectId, taskId);
     }
 }
