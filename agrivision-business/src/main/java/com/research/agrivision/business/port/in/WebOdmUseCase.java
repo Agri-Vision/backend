@@ -8,5 +8,5 @@ import com.research.hexa.core.UseCase;
 public interface WebOdmUseCase {
     AuthenticationResponse getAuthenticationToken(AuthenticationRequest authenticationRequest);
 
-    String getWebOdmTask(String projectId, String taskId, String authorizationHeader);
+    String getWebOdmTask(String projectId, String taskId);
 }

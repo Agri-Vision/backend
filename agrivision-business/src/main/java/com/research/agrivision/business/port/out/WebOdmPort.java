@@ -6,5 +6,5 @@ import com.research.agrivision.business.entity.webodm.AuthenticationResponse;
 public interface WebOdmPort {
     AuthenticationResponse getAuthenticationToken(AuthenticationRequest authenticationRequest);
 
-    String getWebOdmTask(String projectId, String taskId, String authorizationHeader);
+    String getWebOdmTask(String projectId, String taskId);
 }
