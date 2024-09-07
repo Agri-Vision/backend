@@ -32,4 +32,9 @@ public class SpringBootConfig {
     WebOdmUseCase webOdmUseCase() {
         return new WebOdmUseCaseImpl();
     }
+
+    @Bean
+    FileUseCase fileUseCase() {
+        return new FileUseCaseImpl();
+    }
 }
