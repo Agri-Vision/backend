@@ -2,7 +2,7 @@ server:
   port: 8080
 spring:
   datasource:
-    url: jdbc:postgresql://agrivision-nmronlinerentals-fe34.h.aivencloud.com:17574/prod-av?sslmode=require
+    url: jdbc:postgresql://pg-ca549d6e-10a8-48dd-ab1e-63a485e8f57a-agrivisi1687267950-chor.k.aivencloud.com:11903/prod-av?sslmode=require
     username: avnadmin
     password: ${DB_PASSWORD}
     driverClassName: org.postgresql.Driver
