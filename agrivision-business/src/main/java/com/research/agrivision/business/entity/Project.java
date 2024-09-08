@@ -18,6 +18,7 @@ public class Project extends BaseEntity {
     private String projectName;
     private ProjectStatus status;
     private User agent;
+    private Plantation plantation;
     private List<IotDevice> iotDeviceList;
     private List<Task> taskList;
 }

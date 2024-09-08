@@ -26,4 +26,8 @@ public class Project extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agent_id")
     private AvUser agent;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plantationId")
+    private Plantation plantation;
 }
