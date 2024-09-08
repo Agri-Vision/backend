@@ -16,4 +16,5 @@ public class OrganizationRequest implements Request {
     private String orgCode;
     private String orgName;
     private String district;
+    private String orgImage;
 }

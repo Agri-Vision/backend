@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,4 +16,7 @@ public class Organization extends BaseEntity {
     private String orgCode;
     private String orgName;
     private String district;
+    private String orgImage;
+    private String orgImageUrl;
+    private List<Plantation> plantationList;
 }

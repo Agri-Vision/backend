@@ -41,4 +41,9 @@ public class IotUseCaseImpl implements IotUseCase {
     public void deleteAllIotReadings() {
         saveIotPort.deleteAllIotReadings();
     }
+
+    @Override
+    public String getEnvironmentData() {
+        return getIotPort.getEnvironmentData();
+    }
 }

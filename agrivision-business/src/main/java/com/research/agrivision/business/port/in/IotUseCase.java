@@ -16,4 +16,6 @@ public interface IotUseCase {
     List<IotReading> getIotReadingByTimePeriod(String time);
 
     void deleteAllIotReadings();
+
+    String getEnvironmentData();
 }
