@@ -1,5 +1,6 @@
 package com.research.agrivision.api.adapter.jpa;
 
+import com.research.agrivision.api.adapter.jpa.entity.Plantation;
 import com.research.agrivision.api.adapter.jpa.repository.OrganizationRepository;
 import com.research.agrivision.business.entity.Organization;
 import com.research.agrivision.business.port.out.GetOrganizationPort;
@@ -51,7 +52,13 @@ public class OrganizationPersistentAdapter implements SaveOrganizationPort, GetO
     @Override
     public Organization updateOrganization(Organization organization) {
         if (organization == null) return null;
-        com.research.agrivision.api.adapter.jpa.entity.Organization dbOrganization = organizationRepository.save(mapper.map(organization, com.research.agrivision.api.adapter.jpa.entity.Organization.class));
+        com.research.agrivision.api.adapter.jpa.entity.Organization dbOrganization = mapper.map(organization, com.research.agrivision.api.adapter.jpa.entity.Organization.class);
+        if (dbOrganization.getPlantationList() != null) {
+            for (Plantation plantation : dbOrganization.getPlantationList()) {
+                plantation.setOrganization(dbOrganization);
+            }
+        }
+        organizationRepository.save(dbOrganization);
         return mapper.map(dbOrganization, Organization.class);
     }
 

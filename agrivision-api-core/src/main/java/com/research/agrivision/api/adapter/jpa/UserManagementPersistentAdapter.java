@@ -72,7 +72,11 @@ public class UserManagementPersistentAdapter implements GetUserPort, SaveUserPor
     @Override
     public User updateUser(User user) {
         if (user == null) return null;
+        Optional<AvUser> optionalAvUser = userRepository.findById(user.getId());
+        String password = null;
+        if (optionalAvUser.isPresent()) password = optionalAvUser.get().getPassword();
         com.research.agrivision.api.adapter.jpa.entity.AvUser avUser = mapper.map(user, com.research.agrivision.api.adapter.jpa.entity.AvUser.class);
+        if (user.getPassword() == null) avUser.setPassword(password);
         AvUser updatedUser = userRepository.save(avUser);
         UserRole userRole = new UserRole();
 
@@ -116,7 +120,7 @@ public class UserManagementPersistentAdapter implements GetUserPort, SaveUserPor
 
     @Override
     public List<UserRole> getAllUserRolesByType(String roleType) {
-        return userRoleRepository.findAllAvUserRolesByRoleType(roleType).stream()
+        return userRoleRepository.findAllAvUserRolesByRoleTypeIgnoreCase(roleType).stream()
                 .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.AvUserRole::getLastModifiedDate).reversed())
                 .map(userRole -> mapper.map(userRole, com.research.agrivision.business.entity.UserRole.class))
                 .toList();
@@ -125,20 +129,50 @@ public class UserManagementPersistentAdapter implements GetUserPort, SaveUserPor
     @Override
     public User getUserByEmail(String email) {
         Optional<com.research.agrivision.api.adapter.jpa.entity.AvUser> user = userRepository.findAvUserByEmail(email.toLowerCase());
-        return user.map(avUser -> mapper.map(avUser, User.class)).orElse(null);
+        UserRole role = new UserRole();
+        if (user.isPresent()) {
+            AvUserRoleMap roleMap = roleMapRepository.findAvUserRoleMapByUserId(user.get().getId());
+            if (roleMap != null) {
+                role = mapper.map(roleMap.getRole(), UserRole.class);
+            }
+            User dbUser = mapper.map(user, com.research.agrivision.business.entity.User.class);
+            dbUser.setRole(role);
+            return dbUser;
+        }
+        return null;
     }
 
     @Override
     public User getUserById(Long id) {
         Optional<com.research.agrivision.api.adapter.jpa.entity.AvUser> user = userRepository.findById(id);
-        return user.map(avUser -> mapper.map(avUser, User.class)).orElse(null);
+        UserRole role = new UserRole();
+        if (user.isPresent()) {
+            AvUserRoleMap roleMap = roleMapRepository.findAvUserRoleMapByUserId(user.get().getId());
+            if (roleMap != null) {
+                role = mapper.map(roleMap.getRole(), UserRole.class);
+            }
+            User dbUser = mapper.map(user, com.research.agrivision.business.entity.User.class);
+            dbUser.setRole(role);
+            return dbUser;
+        }
+        return null;
     }
 
     @Override
     public List<User> getAllUsers() {
-        return userRepository.findAll().stream()
+        List<User> userList = userRepository.findAll().stream()
                 .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.AvUser::getLastModifiedDate).reversed())
                 .map(user -> mapper.map(user, com.research.agrivision.business.entity.User.class))
                 .toList();
+        for (User user : userList) {
+            UserRole role = new UserRole();
+            AvUserRoleMap roleMap = roleMapRepository.findAvUserRoleMapByUserId(user.getId());
+            if (roleMap != null) {
+                role = mapper.map(roleMap.getRole(), UserRole.class);
+            }
+            User dbUser = mapper.map(user, com.research.agrivision.business.entity.User.class);
+            dbUser.setRole(role);
+        }
+        return userList;
     }
 }

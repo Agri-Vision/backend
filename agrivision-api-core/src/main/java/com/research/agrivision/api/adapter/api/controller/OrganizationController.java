@@ -25,31 +25,34 @@ public class OrganizationController {
     }
 
     @PostMapping()
-    public ResponseEntity<OrganizationResponse> createOrganization(@RequestBody final OrganizationRequest request) {
+    public ResponseEntity<Organization> createOrganization(@RequestBody final Organization request) {
         if (request == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        Organization organization = organizationService.createOrganization(mapper.requestToEntity(request));
-        return ResponseEntity.ok(mapper.entityToResponse(organization));
+        Organization organization = organizationService.createOrganization(request);
+        return ResponseEntity.ok(organization);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrganizationResponse> getOrganizationById(@PathVariable Long id) {
+    public ResponseEntity<Organization> getOrganizationById(@PathVariable Long id) {
         Organization organization = organizationService.getOrganizationById(id);
         if (organization == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(mapper.entityToResponse(organization));
+        return ResponseEntity.ok(organization);
     }
 
     @GetMapping()
-    public ResponseEntity<List<OrganizationResponse>> getAllOrganizations() {
+    public ResponseEntity<List<Organization>> getAllOrganizations() {
         List<Organization> organizationList = organizationService.getAllOrganizations();
-        return ResponseEntity.ok(mapper.entityToResponse(organizationList));
+        if (organizationList == null || organizationList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(organizationList);
     }
 
     @PutMapping()
-    public ResponseEntity<OrganizationResponse> updateOrganization(@RequestBody final OrganizationRequest request) {
+    public ResponseEntity<Organization> updateOrganization(@RequestBody final Organization request) {
         if (request == null || request.getId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -60,8 +63,8 @@ public class OrganizationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        Organization updatedOrganization = organizationService.updateOrganization(mapper.requestToEntity(request));
-        return ResponseEntity.ok(mapper.entityToResponse(updatedOrganization));
+        Organization updatedOrganization = organizationService.updateOrganization(request);
+        return ResponseEntity.ok(updatedOrganization);
     }
 
     @DeleteMapping("/{id}")

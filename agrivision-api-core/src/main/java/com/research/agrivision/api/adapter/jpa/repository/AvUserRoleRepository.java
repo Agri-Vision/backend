@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface AvUserRoleRepository extends JpaRepository<AvUserRole, Long> {
-    List<AvUserRole> findAllAvUserRolesByRoleType(String roleType);
+    List<AvUserRole> findAllAvUserRolesByRoleTypeIgnoreCase(String roleType);
 }

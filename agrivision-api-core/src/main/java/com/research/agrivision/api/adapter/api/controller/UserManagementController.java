@@ -21,16 +21,6 @@ public class UserManagementController {
         this.userService = userService;
     }
 
-    @PostMapping("/user")
-    public ResponseEntity<User> createUser(@RequestBody final User user) {
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        User createdUser = userService.createUser(user);
-        createdUser.setPassword(null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-    }
-
     @PostMapping("/role")
     public ResponseEntity<UserRole> createUserRole(@RequestBody final UserRole userRole) {
         if (userRole == null) {
@@ -68,13 +58,29 @@ public class UserManagementController {
     @GetMapping("/role")
     public ResponseEntity<List<UserRole>> getAllUserRoles() {
         List<UserRole> roleList = userService.getAllUserRoles();
+        if (roleList == null || roleList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.ok(roleList);
     }
 
     @GetMapping("/role/type/{roleType}")
     public ResponseEntity<List<UserRole>> getAllUserRolesByType(@PathVariable String roleType) {
         List<UserRole> roleList = userService.getAllUserRolesByType(roleType);
+        if (roleList == null || roleList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.ok(roleList);
+    }
+
+    @PostMapping("/user")
+    public ResponseEntity<User> createUser(@RequestBody final User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        User createdUser = userService.createUser(user);
+        createdUser.setPassword(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @PostMapping("/login")
@@ -85,7 +91,7 @@ public class UserManagementController {
         User user = userService.getUserByEmail(request.getEmail());
         if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!user.getPassword().equals(request.getPassword()) || !user.isStatus()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         user.setPassword(null);
@@ -98,6 +104,7 @@ public class UserManagementController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        user.setPassword(null);
         return ResponseEntity.ok(user);
     }
 
@@ -113,6 +120,9 @@ public class UserManagementController {
     @GetMapping("/user")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
+        if (users == null || users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.ok(users);
     }
 

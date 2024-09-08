@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserManagementUseCaseImpl implements UserManagementUseCase {
@@ -26,6 +27,7 @@ public class UserManagementUseCaseImpl implements UserManagementUseCase {
     public User createUser(User user) {
         String email = user.getEmail().toLowerCase();
         user.setEmail(email);
+        user.setIdentityId(String.valueOf(UUID.randomUUID()));
         User createdUser = saveUserPort.createUser(user);
         generateSignedUrl(createdUser);
         return createdUser;
@@ -62,7 +64,6 @@ public class UserManagementUseCaseImpl implements UserManagementUseCase {
         if (email == null || email.isEmpty()) return null;
         User user = getUserPort.getUserByEmail(email);
         if (user == null) return null;
-        user.setPassword(null);
         generateSignedUrl(user);
         return user;
     }

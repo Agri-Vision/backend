@@ -20,5 +20,6 @@ public class User extends BaseEntity {
     private UserRole role;
     private String profileImg;
     private String profileImgUrl;
-
+    private Double currentLatitude;
+    private Double currentLongitude;
 }

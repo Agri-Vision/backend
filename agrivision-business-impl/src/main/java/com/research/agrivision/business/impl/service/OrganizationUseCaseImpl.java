@@ -1,6 +1,8 @@
 package com.research.agrivision.business.impl.service;
 
 import com.research.agrivision.business.entity.Organization;
+import com.research.agrivision.business.entity.Plantation;
+import com.research.agrivision.business.entity.User;
 import com.research.agrivision.business.port.in.OrganizationUseCase;
 import com.research.agrivision.business.port.out.FilePort;
 import com.research.agrivision.business.port.out.GetOrganizationPort;
@@ -25,15 +27,26 @@ public class OrganizationUseCaseImpl implements OrganizationUseCase {
 
     @Override
     public Organization createOrganization(Organization organization) {
-        return saveOrganizationPort.createOrganization(organization);
+        Organization dbOrganization = saveOrganizationPort.createOrganization(organization);
+        generateOrganizationSignedUrl(dbOrganization);
+        if (dbOrganization.getPlantationList() != null && !dbOrganization.getPlantationList().isEmpty()) {
+            for (Plantation plantation : dbOrganization.getPlantationList()) {
+                generatePlantationSignedUrl(plantation);
+            }
+        }
+        return dbOrganization;
     }
 
     @Override
     public Organization getOrganizationById(Long id) {
         Organization organization = getOrganizationPort.getOrganizationById(id);
         if (organization == null) return null;
-        String fileName = organization.getOrgImage();
-        organization.setOrgImageUrl(filePort.generateSignedUrl(fileName));
+        generateOrganizationSignedUrl(organization);
+        if (organization.getPlantationList() != null && !organization.getPlantationList().isEmpty()) {
+            for (Plantation plantation : organization.getPlantationList()) {
+                generatePlantationSignedUrl(plantation);
+            }
+        }
         return organization;
     }
 
@@ -42,19 +55,45 @@ public class OrganizationUseCaseImpl implements OrganizationUseCase {
         List<Organization> organizationList = getOrganizationPort.getAllOrganizations();
         if (organizationList == null || organizationList.isEmpty()) return organizationList;
         for (Organization organization : organizationList) {
-            String fileName = organization.getOrgImage();
-            organization.setOrgImageUrl(filePort.generateSignedUrl(fileName));
+            generateOrganizationSignedUrl(organization);
+
+            if (organization.getPlantationList() != null && !organization.getPlantationList().isEmpty()) {
+                for (Plantation plantation : organization.getPlantationList()) {
+                    generatePlantationSignedUrl(plantation);
+                }
+            }
         }
         return organizationList;
     }
 
     @Override
     public Organization updateOrganization(Organization organization) {
-        return saveOrganizationPort.updateOrganization(organization);
+        Organization dbOrganization = saveOrganizationPort.updateOrganization(organization);
+        generateOrganizationSignedUrl(dbOrganization);
+        if (dbOrganization.getPlantationList() != null && !dbOrganization.getPlantationList().isEmpty()) {
+            for (Plantation plantation : dbOrganization.getPlantationList()) {
+                generatePlantationSignedUrl(plantation);
+            }
+        }
+        return dbOrganization;
     }
 
     @Override
     public void deleteOrganizationById(Long id) {
         saveOrganizationPort.deleteOrganizationById(id);
+    }
+
+    private void generateOrganizationSignedUrl(Organization organization) {
+        if(organization.getOrgImage() != null) {
+            String imgName = organization.getOrgImage();
+            organization.setOrgImageUrl(filePort.generateSignedUrl(imgName));
+        }
+    }
+
+    private void generatePlantationSignedUrl(Plantation plantation) {
+        if(plantation.getPlantationImg() != null) {
+            String imgName = plantation.getPlantationImg();
+            plantation.setPlantationImgUrl(filePort.generateSignedUrl(imgName));
+        }
     }
 }
