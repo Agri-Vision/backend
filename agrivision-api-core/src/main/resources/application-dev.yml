@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:postgresql://pg-ca549d6e-10a8-48dd-ab1e-63a485e8f57a-agrivisi1687267950-chor.k.aivencloud.com:11903/dev-av?sslmode=require
     username: avnadmin
-    password: ${DB_PASSWORD}
+    password: ${APPSETTING_DB_PASSWORD}
     driverClassName: org.postgresql.Driver
   http:
     converters.preferred-json-mapper: jackson
