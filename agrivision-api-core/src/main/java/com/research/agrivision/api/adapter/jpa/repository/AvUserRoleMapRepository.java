@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AvUserRoleMapRepository extends JpaRepository<AvUserRoleMap, Long> {
+    AvUserRoleMap findAvUserRoleMapByUserId(Long id);
 }

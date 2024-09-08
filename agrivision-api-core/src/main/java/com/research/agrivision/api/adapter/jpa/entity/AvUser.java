@@ -16,4 +16,5 @@ public class AvUser extends BaseEntity {
     private String identityId;
     private boolean internal;
     private boolean status;
+    private String profileImg;
 }

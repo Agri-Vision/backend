@@ -18,4 +18,7 @@ public class User extends BaseEntity {
     private boolean internal;
     private boolean status;
     private UserRole role;
+    private String profileImg;
+    private String profileImgUrl;
+
 }

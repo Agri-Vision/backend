@@ -3,7 +3,9 @@ package com.research.agrivision.api.adapter.jpa;
 import com.research.agrivision.api.adapter.jpa.repository.OrganizationRepository;
 import com.research.agrivision.business.entity.Organization;
 import com.research.agrivision.business.port.out.GetOrganizationPort;
+import com.research.agrivision.business.port.out.GetPlantationPort;
 import com.research.agrivision.business.port.out.SaveOrganizationPort;
+import com.research.agrivision.business.port.out.SavePlantationPort;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class OrganizationPersistentAdapter implements SaveOrganizationPort, GetOrganizationPort {
+public class OrganizationPersistentAdapter implements SaveOrganizationPort, GetOrganizationPort, SavePlantationPort, GetPlantationPort {
     private final OrganizationRepository organizationRepository;
 
     private ModelMapper mapper = new ModelMapper();
