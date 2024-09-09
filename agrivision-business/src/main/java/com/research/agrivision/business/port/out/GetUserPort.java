@@ -17,4 +17,6 @@ public interface GetUserPort {
     User getUserById(Long id);
 
     List<User> getAllUsers();
+
+    List<User> getAllUsersByRole(Long roleId);
 }

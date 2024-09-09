@@ -13,6 +13,7 @@ import com.research.agrivision.business.port.out.SaveUserPort;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -161,6 +162,31 @@ public class UserManagementPersistentAdapter implements GetUserPort, SaveUserPor
     @Override
     public List<User> getAllUsers() {
         List<User> userList = userRepository.findAll().stream()
+                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.AvUser::getLastModifiedDate).reversed())
+                .map(user -> mapper.map(user, com.research.agrivision.business.entity.User.class))
+                .toList();
+        for (User user : userList) {
+            UserRole role = new UserRole();
+            AvUserRoleMap roleMap = roleMapRepository.findAvUserRoleMapByUserId(user.getId());
+            if (roleMap != null) {
+                role = mapper.map(roleMap.getRole(), UserRole.class);
+            }
+            User dbUser = mapper.map(user, com.research.agrivision.business.entity.User.class);
+            dbUser.setRole(role);
+        }
+        return userList;
+    }
+
+    @Override
+    public List<User> getAllUsersByRole(Long roleId) {
+        List<AvUserRoleMap> roleMapList = roleMapRepository.findAvUserRoleMapsByRoleId(roleId);
+        List<AvUser> users = new ArrayList<>();
+
+        for (AvUserRoleMap roleMap : roleMapList) {
+            users.add(roleMap.getUser());
+        }
+
+        List<User> userList = users.stream()
                 .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.AvUser::getLastModifiedDate).reversed())
                 .map(user -> mapper.map(user, com.research.agrivision.business.entity.User.class))
                 .toList();
