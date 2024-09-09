@@ -32,4 +32,4 @@ web-odm:
   url: http://localhost:8000
 
 iot:
-  url: https://iot.gsentry.lk
+  url: http://iot.gsentry.cloud
