@@ -1,5 +1,6 @@
 package com.research.agrivision.business.impl.service;
 
+import com.research.agrivision.business.entity.ml.sample.DiseaseRequest;
 import com.research.agrivision.business.entity.ml.sample.SampleModelRequest;
 import com.research.agrivision.business.port.in.MlUseCase;
 import com.research.agrivision.business.port.out.MlPort;
@@ -14,5 +15,15 @@ public class MlUseCaseImpl implements MlUseCase {
     @Override
     public String getSampleModel(SampleModelRequest request, String authToken) {
         return mlPort.getSampleModel(request, authToken);
+    }
+
+    @Override
+    public String getDiseaseModel(DiseaseRequest diseaseRequest) {
+        return mlPort.getDiseaseModel(diseaseRequest);
+    }
+
+    @Override
+    public String getStressModel(DiseaseRequest diseaseRequest) {
+        return mlPort.getStressModel(diseaseRequest);
     }
 }

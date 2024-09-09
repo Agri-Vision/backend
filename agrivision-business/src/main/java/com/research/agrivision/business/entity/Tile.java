@@ -12,6 +12,7 @@ import lombok.Setter;
 public class Tile extends BaseEntity {
     private Long id;
     private String tileImage;
+    private String tileImageUrl;
     private String yield;
     private String stress;
     private String disease;

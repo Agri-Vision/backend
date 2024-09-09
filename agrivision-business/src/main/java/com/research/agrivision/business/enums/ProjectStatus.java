@@ -2,7 +2,7 @@ package com.research.agrivision.business.enums;
 
 public enum ProjectStatus {
     CREATED("Created"),
-    PENDING("Pending"),
+    PROCESSING("Processing"),
     COMPLETED("Completed");
 
     ProjectStatus(String name){this.name = name;}

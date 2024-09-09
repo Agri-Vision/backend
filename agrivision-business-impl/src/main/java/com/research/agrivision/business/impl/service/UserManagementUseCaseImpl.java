@@ -96,6 +96,16 @@ public class UserManagementUseCaseImpl implements UserManagementUseCase {
         return updateduser;
     }
 
+    @Override
+    public List<User> getAllUsersByRole(Long roleId) {
+        List<User> users = getUserPort.getAllUsersByRole(roleId);
+        for (User user : users) {
+            user.setPassword(null);
+            generateSignedUrl(user);
+        }
+        return users;
+    }
+
     private void generateSignedUrl(User user) {
         if(user.getProfileImg() != null) {
             String imgName = user.getProfileImg();
