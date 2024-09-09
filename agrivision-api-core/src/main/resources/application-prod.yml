@@ -30,3 +30,6 @@ web-odm:
   username: DinukaKariyawasam
   password: ${WEB_ODM_PASSWORD}
   url: http://localhost:8000
+
+iot:
+  url: http://iot.gsentry.cloud

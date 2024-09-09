@@ -1,10 +1,12 @@
 package com.research.agrivision.api.adapter.jpa;
 
+import com.research.agrivision.api.adapter.clients.IotClient;
 import com.research.agrivision.api.adapter.jpa.repository.IotReadingRepository;
 import com.research.agrivision.business.entity.IotReading;
 import com.research.agrivision.business.port.out.GetIotPort;
 import com.research.agrivision.business.port.out.SaveIotPort;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
@@ -20,6 +22,9 @@ public class IotPersistentAdapter implements SaveIotPort, GetIotPort {
     private final IotReadingRepository iotReadingRepository;
 
     private ModelMapper mapper = new ModelMapper();
+
+    @Autowired
+    private IotClient iotClient;
 
     public IotPersistentAdapter(IotReadingRepository iotReadingRepository) {
         this.iotReadingRepository = iotReadingRepository;
@@ -93,5 +98,10 @@ public class IotPersistentAdapter implements SaveIotPort, GetIotPort {
                 ).stream()
                 .map(iotReadingEntity -> mapper.map(iotReadingEntity, IotReading.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getEnvironmentData() {
+        return iotClient.getEnvironmentData();
     }
 }

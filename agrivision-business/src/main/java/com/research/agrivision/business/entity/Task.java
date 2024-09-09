@@ -1,5 +1,6 @@
 package com.research.agrivision.business.entity;
 
+import com.research.agrivision.business.enums.TaskType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,12 +12,10 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Organization extends BaseEntity {
+public class Task extends BaseEntity {
     private Long id;
-    private String orgCode;
-    private String orgName;
-    private String district;
-    private String orgImage;
-    private String orgImageUrl;
-    private List<Plantation> plantationList;
+    private String webOdmTaskId;
+    private String mapImage;
+    private TaskType taskType;
+    private List<Tile> tileList;
 }

@@ -37,4 +37,14 @@ public class SpringBootConfig {
     FileUseCase fileUseCase() {
         return new FileUseCaseImpl();
     }
+
+    @Bean
+    ProjectUseCase projectUseCase() {
+        return new ProjectUseCaseImpl();
+    }
+
+    @Bean
+    UserManagementUseCase userManagementUseCase() {
+        return new UserManagementUseCaseImpl();
+    }
 }

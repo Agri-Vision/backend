@@ -109,6 +109,11 @@ public class IotController {
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse("Success"));
     }
 
+    @GetMapping("/get_enviroment_data")
+    public ResponseEntity<String> getEnvironmentData() {
+        return ResponseEntity.ok(iotService.getEnvironmentData());
+    }
+
     private List<IotReading> extractIotReadings(MultipartFile file) {
         try {
             String filename = file.getOriginalFilename();

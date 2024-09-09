@@ -16,4 +16,6 @@ public class OrganizationResponse implements Response {
     private String orgCode;
     private String orgName;
     private String district;
+    private String orgImage;
+    private String orgImageUrl;
 }
