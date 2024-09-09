@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,4 +17,5 @@ public class Task extends BaseEntity {
     private String webOdmTaskId;
     private String mapImage;
     private TaskType taskType;
+    private List<Tile> tileList;
 }
