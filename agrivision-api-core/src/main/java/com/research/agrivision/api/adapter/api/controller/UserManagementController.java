@@ -141,4 +141,13 @@ public class UserManagementController {
         User updatedUser = userService.updateUser(user);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @GetMapping("/user/role/{roleId}")
+    public ResponseEntity<List<User>> getAllUsersByRole(@PathVariable Long roleId) {
+        List<User> users = userService.getAllUsersByRole(roleId);
+        if (users == null || users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(users);
+    }
 }

@@ -1,6 +1,8 @@
 package com.research.agrivision.api.adapter.api.controller;
 
 import com.research.agrivision.api.adapter.api.request.ModelRequest;
+import com.research.agrivision.api.adapter.api.response.CommonResponse;
+import com.research.agrivision.business.entity.ml.sample.DiseaseRequest;
 import com.research.agrivision.business.entity.ml.sample.SampleModelRequest;
 import com.research.agrivision.business.port.in.MlUseCase;
 import org.modelmapper.ModelMapper;
@@ -47,5 +49,17 @@ public class MlController {
         SampleModelRequest sampleModelRequest = new SampleModelRequest(request);
         String response = mlService.getSampleModel(sampleModelRequest, authToken);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/disease")
+    public ResponseEntity<CommonResponse> getDiseaseModel(@RequestBody DiseaseRequest diseaseRequest) {
+        String response = mlService.getDiseaseModel(diseaseRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse(response));
+    }
+
+    @PostMapping("/stress")
+    public ResponseEntity<CommonResponse> getStressModel(@RequestBody DiseaseRequest diseaseRequest) {
+        String response = mlService.getStressModel(diseaseRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse(response));
     }
 }

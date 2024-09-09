@@ -16,6 +16,7 @@ public class Task extends BaseEntity {
     private Long id;
     private String webOdmTaskId;
     private String mapImage;
+    private String mapImageUrl;
     private TaskType taskType;
     private List<Tile> tileList;
 }
