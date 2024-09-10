@@ -157,7 +157,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     @Override
     public Tile getTileById(Long tileId) {
         Tile tile = getTilePort.getTileById(tileId);
-        generateTileSignedUrl(tile);
+        if(tile != null)generateTileSignedUrl(tile);
         return tile;
     }
 
@@ -174,7 +174,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     }
 
     private void generateTileSignedUrl(Tile tile) {
-        if(tile.getTileImage() != null) {
+        if(tile !=null && tile.getTileImage() != null) {
             String imgName = tile.getTileImage();
             tile.setTileImageUrl(filePort.generateSignedUrl(imgName));
         }
