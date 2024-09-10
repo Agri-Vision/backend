@@ -2,6 +2,7 @@ package com.research.agrivision.api.adapter.jpa;
 
 import com.research.agrivision.api.adapter.jpa.entity.Plantation;
 import com.research.agrivision.api.adapter.jpa.repository.OrganizationRepository;
+import com.research.agrivision.api.adapter.jpa.repository.PlantationRepository;
 import com.research.agrivision.business.entity.Organization;
 import com.research.agrivision.business.port.out.GetOrganizationPort;
 import com.research.agrivision.business.port.out.GetPlantationPort;
@@ -17,11 +18,13 @@ import java.util.Optional;
 @Component
 public class OrganizationPersistentAdapter implements SaveOrganizationPort, GetOrganizationPort, SavePlantationPort, GetPlantationPort {
     private final OrganizationRepository organizationRepository;
+    private final PlantationRepository plantationRepository;
 
     private ModelMapper mapper = new ModelMapper();
 
-    public OrganizationPersistentAdapter(OrganizationRepository organizationRepository) {
+    public OrganizationPersistentAdapter(OrganizationRepository organizationRepository, PlantationRepository plantationRepository) {
         this.organizationRepository = organizationRepository;
+        this.plantationRepository = plantationRepository;
     }
 
     @Override
@@ -68,5 +71,14 @@ public class OrganizationPersistentAdapter implements SaveOrganizationPort, GetO
         if (organization.isPresent()) {
             organizationRepository.deleteById(id);
         }
+    }
+
+    @Override
+    public com.research.agrivision.business.entity.Plantation getPlantationById(Long plantationId) {
+        Optional<com.research.agrivision.api.adapter.jpa.entity.Plantation> plantation = plantationRepository.findById(plantationId);
+        if (plantation.isPresent()) {
+            return mapper.map(plantation, com.research.agrivision.business.entity.Plantation.class);
+        }
+        return null;
     }
 }
