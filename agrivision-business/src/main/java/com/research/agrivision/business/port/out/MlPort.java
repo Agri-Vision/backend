@@ -9,4 +9,6 @@ public interface MlPort {
     String getDiseaseModel(DiseaseRequest diseaseRequest);
 
     String getStressModel(DiseaseRequest diseaseRequest);
+
+    String getYieldModel(DiseaseRequest diseaseRequest);
 }

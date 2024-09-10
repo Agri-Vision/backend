@@ -169,7 +169,19 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
         String disease = mlPort.getDiseaseModel(diseaseRequest);
         tile.setDisease(disease);
 
-        //TODO add yield prediction
+        DiseaseRequest yieldRequest = new DiseaseRequest();
+        ArrayList<Double> yieldFeatures = new ArrayList<>();
+        yieldFeatures.add(tile.getNdvi());
+        yieldFeatures.add(tile.getTemperature());
+        yieldFeatures.add(tile.getHumidity());
+        yieldFeatures.add(tile.getUvLevel());
+        yieldFeatures.add(tile.getSoilMoisture());
+        yieldFeatures.add(tile.getPressure());
+        yieldFeatures.add(tile.getAltitude());
+
+        yieldRequest.setFeatures(yieldFeatures);
+        String yield = mlPort.getYieldModel(yieldRequest);
+        tile.setYield(yield);
 
         tileRepository.save(tile);
     }
