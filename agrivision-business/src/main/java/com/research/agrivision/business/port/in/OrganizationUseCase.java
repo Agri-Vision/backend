@@ -1,6 +1,7 @@
 package com.research.agrivision.business.port.in;
 
 import com.research.agrivision.business.entity.Organization;
+import com.research.agrivision.business.entity.Plantation;
 import com.research.agrivision.business.entity.Sample;
 import com.research.hexa.core.UseCase;
 
@@ -40,4 +41,6 @@ public interface OrganizationUseCase {
      * @param id - organization id
      */
     void deleteOrganizationById(Long id);
+
+    Plantation getPlantationById(Long plantationId);
 }
