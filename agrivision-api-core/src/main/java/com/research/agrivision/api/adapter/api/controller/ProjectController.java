@@ -1,6 +1,7 @@
 package com.research.agrivision.api.adapter.api.controller;
 
 import com.research.agrivision.business.entity.Project;
+import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.port.in.ProjectUseCase;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -69,5 +70,20 @@ public class ProjectController {
 
         Project updatedProject = projectService.updateProject(request);
         return ResponseEntity.ok(updatedProject);
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Project>> getAllProjectsByStatus(@PathVariable String status) {
+        ProjectStatus projectStatus = ProjectStatus.fromString(status);
+
+        if (projectStatus == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        List<Project> projectList = projectService.getAllProjectsByStatus(projectStatus);
+        if (projectList == null || projectList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(projectList);
     }
 }

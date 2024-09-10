@@ -5,6 +5,7 @@ import com.research.agrivision.api.adapter.jpa.repository.*;
 import com.research.agrivision.business.entity.Project;
 import com.research.agrivision.business.entity.imageTool.ToolReadings;
 import com.research.agrivision.business.entity.ml.sample.DiseaseRequest;
+import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.port.out.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +118,14 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     }
 
     @Override
+    public List<Project> getAllProjectsByStatus(ProjectStatus status) {
+        return projectRepository.findAllByStatus(status).stream()
+                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Project::getLastModifiedDate).reversed())
+                .map(project -> mapper.map(project, com.research.agrivision.business.entity.Project.class))
+                .toList();
+    }
+
+    @Override
     public com.research.agrivision.business.entity.Task getTaskByWebOdmTaskId(String taskId) {
         Optional<com.research.agrivision.api.adapter.jpa.entity.Task> task = taskRepository.findByWebOdmTaskId(taskId);
         if (task.isPresent()) {
@@ -129,6 +138,15 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     public void createTile(ToolReadings toolReadings) {
         Tile tile = new Tile();
         com.research.agrivision.api.adapter.jpa.entity.Task task = taskRepository.findByWebOdmTaskId(toolReadings.getTaskId()).orElse(null);
+
+        if (task != null && task.getProject() !=null && task.getProject().getId() != null) {
+            com.research.agrivision.api.adapter.jpa.entity.Project project = projectRepository.findById(task.getProject().getId()).orElse(null);
+            if (project != null) {
+                project.setStatus(ProjectStatus.COMPLETED);
+                projectRepository.save(project);
+            }
+        }
+
         tile.setTask(task);
         tile.setNdvi(toolReadings.getNdvi());
         tile.setRendvi(toolReadings.getRendvi());
