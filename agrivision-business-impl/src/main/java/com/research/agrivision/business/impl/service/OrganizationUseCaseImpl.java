@@ -6,6 +6,7 @@ import com.research.agrivision.business.entity.User;
 import com.research.agrivision.business.port.in.OrganizationUseCase;
 import com.research.agrivision.business.port.out.FilePort;
 import com.research.agrivision.business.port.out.GetOrganizationPort;
+import com.research.agrivision.business.port.out.GetPlantationPort;
 import com.research.agrivision.business.port.out.SaveOrganizationPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ public class OrganizationUseCaseImpl implements OrganizationUseCase {
 
     @Autowired
     private SaveOrganizationPort saveOrganizationPort;
+
+    @Autowired
+    private GetPlantationPort getPlantationPort;
 
     @Autowired
     private FilePort filePort;
@@ -81,6 +85,11 @@ public class OrganizationUseCaseImpl implements OrganizationUseCase {
     @Override
     public void deleteOrganizationById(Long id) {
         saveOrganizationPort.deleteOrganizationById(id);
+    }
+
+    @Override
+    public Plantation getPlantationById(Long plantationId) {
+        return getPlantationPort.getPlantationById(plantationId);
     }
 
     private void generateOrganizationSignedUrl(Organization organization) {
