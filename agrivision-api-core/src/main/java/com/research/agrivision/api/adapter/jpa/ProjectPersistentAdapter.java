@@ -203,4 +203,13 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
 
         tileRepository.save(tile);
     }
+
+    @Override
+    public com.research.agrivision.business.entity.Tile getTileById(Long tileId) {
+        Optional<com.research.agrivision.api.adapter.jpa.entity.Tile> tile = tileRepository.findById(tileId);
+        if (tile.isPresent()) {
+            return mapper.map(tile, com.research.agrivision.business.entity.Tile.class);
+        }
+        return null;
+    }
 }

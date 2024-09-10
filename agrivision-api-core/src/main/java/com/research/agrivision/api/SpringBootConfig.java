@@ -47,4 +47,19 @@ public class SpringBootConfig {
     UserManagementUseCase userManagementUseCase() {
         return new UserManagementUseCaseImpl();
     }
+
+    @Bean
+    DiseaseUseCase diseaseUseCase() {
+        return new DiseaseUseCaseImpl();
+    }
+
+    @Bean
+    StressUseCase stressUseCase() {
+        return new StressUseCaseImpl();
+    }
+
+    @Bean
+    YieldUseCase yieldUseCase() {
+        return new YieldUseCaseImpl();
+    }
 }
