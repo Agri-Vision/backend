@@ -15,6 +15,9 @@ public class Task extends BaseEntity {
     private String mapImage;
     private TaskType taskType;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean status;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectId")
     private Project project;

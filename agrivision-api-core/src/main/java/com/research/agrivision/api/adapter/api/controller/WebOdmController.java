@@ -42,10 +42,9 @@ public class WebOdmController {
     }
 
     @GetMapping("/api/projects/{projectId}/tasks/{taskId}/download/orthophoto.tif")
-    public ResponseEntity<CommonResponse> getAuthenticationToken(@PathVariable String projectId,
+    public ResponseEntity<byte[]> getAuthenticationToken(@PathVariable String projectId,
                                                                  @PathVariable String taskId) {
-        String response = webOdmService.getWebOdmTask(projectId, taskId);
-        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse(response));
+        return webOdmService.getWebOdmTask(projectId, taskId);
     }
 
     @PostMapping("/api/projects")

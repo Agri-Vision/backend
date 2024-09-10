@@ -1,6 +1,8 @@
 package com.research.agrivision.business.port.in;
 
 import com.research.agrivision.business.entity.Project;
+import com.research.agrivision.business.entity.Task;
+import com.research.agrivision.business.entity.imageTool.ToolReadings;
 import com.research.hexa.core.UseCase;
 
 import java.util.List;
@@ -16,4 +18,10 @@ public interface ProjectUseCase {
     List<Project> getAllProjects();
 
     List<Project> getAllProjectsByPlantationId(Long id);
+
+    Project getProjectByWebOdmProjectId(String projectId);
+
+    Task getTaskByWebOdmTaskId(String taskId);
+
+    void createTile(ToolReadings request);
 }

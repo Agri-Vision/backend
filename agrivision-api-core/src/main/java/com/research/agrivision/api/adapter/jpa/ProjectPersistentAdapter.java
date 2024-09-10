@@ -3,10 +3,14 @@ package com.research.agrivision.api.adapter.jpa;
 import com.research.agrivision.api.adapter.jpa.entity.*;
 import com.research.agrivision.api.adapter.jpa.repository.*;
 import com.research.agrivision.business.entity.Project;
+import com.research.agrivision.business.entity.imageTool.ToolReadings;
+import com.research.agrivision.business.entity.ml.sample.DiseaseRequest;
 import com.research.agrivision.business.port.out.*;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +24,9 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     private final PlantationRepository plantationRepository;
 
     private ModelMapper mapper = new ModelMapper();
+
+    @Autowired
+    private MlPort mlPort;
 
     public ProjectPersistentAdapter(ProjectRepository projectRepository, TaskRepository taskRepository, TileRepository tileRepository, AvUserRepository userRepository, PlantationRepository plantationRepository) {
         this.projectRepository = projectRepository;
@@ -98,5 +105,72 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
                 .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Project::getLastModifiedDate).reversed())
                 .map(project -> mapper.map(project, com.research.agrivision.business.entity.Project.class))
                 .toList();
+    }
+
+    @Override
+    public Project getProjectByWebOdmProjectId(String projectId) {
+        Optional<com.research.agrivision.api.adapter.jpa.entity.Project> project = projectRepository.findByWebOdmProjectId(projectId);
+        if (project.isPresent()) {
+            return mapper.map(project, com.research.agrivision.business.entity.Project.class);
+        }
+        return null;
+    }
+
+    @Override
+    public com.research.agrivision.business.entity.Task getTaskByWebOdmTaskId(String taskId) {
+        Optional<com.research.agrivision.api.adapter.jpa.entity.Task> task = taskRepository.findByWebOdmTaskId(taskId);
+        if (task.isPresent()) {
+            return mapper.map(task, com.research.agrivision.business.entity.Task.class);
+        }
+        return null;
+    }
+
+    @Override
+    public void createTile(ToolReadings toolReadings) {
+        Tile tile = new Tile();
+        com.research.agrivision.api.adapter.jpa.entity.Task task = taskRepository.findByWebOdmTaskId(toolReadings.getTaskId()).orElse(null);
+        tile.setTask(task);
+        tile.setNdvi(toolReadings.getNdvi());
+        tile.setRendvi(toolReadings.getRendvi());
+        tile.setCire(toolReadings.getCire());
+        tile.setPri(toolReadings.getPri());
+        tile.setTemperature(30.7571428);
+        tile.setHumidity(76.51428);
+        tile.setUvLevel(0.7442);
+        tile.setSoilMoisture(271.5714);
+        tile.setPressure(95037.1428571);
+        tile.setAltitude(551.4285714);
+
+        DiseaseRequest stressRequest = new DiseaseRequest();
+        ArrayList<Double> stressFeatures = new ArrayList<>();
+        stressFeatures.add(tile.getRendvi());
+        stressFeatures.add(tile.getTemperature());
+        stressFeatures.add(tile.getHumidity());
+        stressFeatures.add(tile.getUvLevel());
+        stressFeatures.add(tile.getSoilMoisture());
+        stressFeatures.add(tile.getPressure());
+        stressFeatures.add(tile.getAltitude());
+
+        stressRequest.setFeatures(stressFeatures);
+        String stress = mlPort.getStressModel(stressRequest);
+        tile.setStress(stress);
+
+        DiseaseRequest diseaseRequest = new DiseaseRequest();
+        ArrayList<Double> diseaseFeatures = new ArrayList<>();
+        diseaseFeatures.add(tile.getNdvi());
+        diseaseFeatures.add(tile.getRendvi());
+        diseaseFeatures.add(tile.getCire());
+        diseaseFeatures.add(tile.getPri());
+        diseaseFeatures.add(tile.getTemperature());
+        diseaseFeatures.add(tile.getHumidity());
+        diseaseFeatures.add(tile.getUvLevel());
+
+        diseaseRequest.setFeatures(diseaseFeatures);
+        String disease = mlPort.getDiseaseModel(diseaseRequest);
+        tile.setDisease(disease);
+
+        //TODO add yield prediction
+
+        tileRepository.save(tile);
     }
 }

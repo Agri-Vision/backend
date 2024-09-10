@@ -19,12 +19,12 @@ public class Tile extends BaseEntity {
     private Double rendvi;
     private Double cire;
     private Double pri;
-    private String temperature;
-    private String humidity;
-    private String uvLevel;
-    private String soilMoisture;
-    private String pressure;
-    private String altitude;
+    private Double temperature;
+    private Double humidity;
+    private Double uvLevel;
+    private Double soilMoisture;
+    private Double pressure;
+    private Double altitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "taskId")

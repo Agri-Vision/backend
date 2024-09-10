@@ -25,7 +25,7 @@ azure:
 client:
   model: https://example-model-dep-workspa-ugqxl.eastus.inference.ml.azure.com
   model-token: ${TOKEN}
-  disease: https://864a-34-106-133-80.ngrok-free.app
+  disease: https://636a-34-125-197-242.ngrok-free.app
   stress: https://5eb0-34-19-35-21.ngrok-free.app
 
 web-odm:
