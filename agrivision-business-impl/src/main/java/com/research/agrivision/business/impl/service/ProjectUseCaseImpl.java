@@ -161,6 +161,11 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         return tile;
     }
 
+    @Override
+    public List<Tile> getAllTiles() {
+        return getTilePort.getAllTiles();
+    }
+
     private void generateTaskSignedUrl(Task task) {
         if(task.getMapImage() != null) {
             String imgName = task.getMapImage();
