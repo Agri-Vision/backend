@@ -46,7 +46,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
 
     @Override
     public Project createProject(Project project) {
-        project.setStatus(ProjectStatus.CREATED);
+        project.setStatus(ProjectStatus.NEW);
         Project dbProject = saveProjectPort.createProject(project);
         if (dbProject == null || dbProject.getTaskList() == null || dbProject.getTaskList().isEmpty()) return dbProject;
         for (Task task : dbProject.getTaskList()) {
@@ -75,7 +75,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
 
     @Override
     public Project updateProject(Project request) {
-        request.setStatus(ProjectStatus.PROCESSING);
+        request.setStatus(ProjectStatus.UPCOMING);
         Project project = saveProjectPort.updateProject(request);
         if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return project;
         for (Task task : project.getTaskList()) {
@@ -136,6 +136,22 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     @Override
     public void createTile(ToolReadings toolReadings) {
         saveTilePort.createTile(toolReadings);
+    }
+
+    @Override
+    public List<Project> getAllProjectsByStatus(ProjectStatus status) {
+        List<Project> projectList = getProjectPort.getAllProjectsByStatus(status);
+        for (Project project : projectList) {
+            if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return projectList;
+            for (Task task : project.getTaskList()) {
+                generateTaskSignedUrl(task);
+                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
+                for (Tile tile : task.getTileList()) {
+                    generateTileSignedUrl(tile);
+                }
+            }
+        }
+        return projectList;
     }
 
     private void generateTaskSignedUrl(Task task) {
