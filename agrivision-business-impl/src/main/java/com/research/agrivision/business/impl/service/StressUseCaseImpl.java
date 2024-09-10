@@ -29,7 +29,7 @@ public class StressUseCaseImpl implements StressUseCase {
     }
 
     private boolean isWaterStressDetected(double soilMoisture, double temperature, double humidity) {
-        return soilMoisture < 30.0 && temperature > 30.0 && humidity < 40.0;
+        return soilMoisture < 300.0 && temperature > 30.0 && humidity < 40.0;
     }
 
     private String generateSuggestions(double soilMoisture, double uvIndex) {
