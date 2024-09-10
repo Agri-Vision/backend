@@ -26,4 +26,9 @@ public class MlUseCaseImpl implements MlUseCase {
     public String getStressModel(DiseaseRequest diseaseRequest) {
         return mlPort.getStressModel(diseaseRequest);
     }
+
+    @Override
+    public String getYieldModel(DiseaseRequest diseaseRequest) {
+        return mlPort.getYieldModel(diseaseRequest);
+    }
 }

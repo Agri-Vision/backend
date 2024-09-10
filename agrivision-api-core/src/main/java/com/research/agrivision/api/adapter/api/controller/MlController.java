@@ -62,4 +62,10 @@ public class MlController {
         String response = mlService.getStressModel(diseaseRequest);
         return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse(response));
     }
+
+    @PostMapping("/yield")
+    public ResponseEntity<CommonResponse> getYieldModel(@RequestBody DiseaseRequest diseaseRequest) {
+        String response = mlService.getYieldModel(diseaseRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(new CommonResponse(response));
+    }
 }
