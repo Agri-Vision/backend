@@ -3,6 +3,7 @@ package com.research.agrivision.business.impl.service;
 import com.research.agrivision.business.entity.Project;
 import com.research.agrivision.business.entity.Task;
 import com.research.agrivision.business.entity.Tile;
+import com.research.agrivision.business.entity.imageTool.ToolReadings;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.port.in.ProjectUseCase;
 import com.research.agrivision.business.port.out.*;
@@ -120,6 +121,21 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
             }
         }
         return projectList;
+    }
+
+    @Override
+    public Project getProjectByWebOdmProjectId(String projectId) {
+        return getProjectPort.getProjectByWebOdmProjectId(projectId);
+    }
+
+    @Override
+    public Task getTaskByWebOdmTaskId(String taskId) {
+        return getTaskPort.getTaskByWebOdmTaskId(taskId);
+    }
+
+    @Override
+    public void createTile(ToolReadings toolReadings) {
+        saveTilePort.createTile(toolReadings);
     }
 
     private void generateTaskSignedUrl(Task task) {
