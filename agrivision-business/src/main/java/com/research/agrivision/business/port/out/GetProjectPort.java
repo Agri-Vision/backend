@@ -10,4 +10,6 @@ public interface GetProjectPort {
     List<Project> getAllProjects();
 
     List<Project> getAllProjectsByPlantationId(Long id);
+
+    Project getProjectByWebOdmProjectId(String projectId);
 }

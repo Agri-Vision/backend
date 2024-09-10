@@ -19,4 +19,5 @@ public class Task extends BaseEntity {
     private String mapImageUrl;
     private TaskType taskType;
     private List<Tile> tileList;
+    private boolean status;
 }

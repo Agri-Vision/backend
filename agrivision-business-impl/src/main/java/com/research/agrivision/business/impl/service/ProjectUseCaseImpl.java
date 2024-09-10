@@ -3,6 +3,7 @@ package com.research.agrivision.business.impl.service;
 import com.research.agrivision.business.entity.Project;
 import com.research.agrivision.business.entity.Task;
 import com.research.agrivision.business.entity.Tile;
+import com.research.agrivision.business.entity.imageTool.ToolReadings;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.port.in.ProjectUseCase;
 import com.research.agrivision.business.port.out.*;
@@ -40,6 +41,9 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     @Autowired
     private FilePort filePort;
 
+    @Autowired
+    private WebOdmPort webOdmPort;
+
     @Override
     public Project createProject(Project project) {
         project.setStatus(ProjectStatus.CREATED);
@@ -76,6 +80,9 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return project;
         for (Task task : project.getTaskList()) {
             generateTaskSignedUrl(task);
+            if (project.getWebOdmProjectId() != null && task.getWebOdmTaskId() != null && !task.isStatus()) {
+                webOdmPort.getWebOdmTask(project.getWebOdmProjectId(), task.getWebOdmTaskId());
+            }
             if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
             for (Tile tile : task.getTileList()) {
                 generateTileSignedUrl(tile);
@@ -114,6 +121,21 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
             }
         }
         return projectList;
+    }
+
+    @Override
+    public Project getProjectByWebOdmProjectId(String projectId) {
+        return getProjectPort.getProjectByWebOdmProjectId(projectId);
+    }
+
+    @Override
+    public Task getTaskByWebOdmTaskId(String taskId) {
+        return getTaskPort.getTaskByWebOdmTaskId(taskId);
+    }
+
+    @Override
+    public void createTile(ToolReadings toolReadings) {
+        saveTilePort.createTile(toolReadings);
     }
 
     private void generateTaskSignedUrl(Task task) {
