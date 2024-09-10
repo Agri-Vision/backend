@@ -6,6 +6,7 @@ import com.research.agrivision.business.entity.webodm.ProjectRequest;
 import com.research.agrivision.business.port.in.WebOdmUseCase;
 import com.research.agrivision.business.port.out.WebOdmPort;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,7 @@ public class WebOdmUseCaseImpl implements WebOdmUseCase {
     }
 
     @Override
-    public String getWebOdmTask(String projectId, String taskId) {
+    public ResponseEntity<byte[]> getWebOdmTask(String projectId, String taskId) {
         return webOdmPort.getWebOdmTask(projectId, taskId);
     }
 

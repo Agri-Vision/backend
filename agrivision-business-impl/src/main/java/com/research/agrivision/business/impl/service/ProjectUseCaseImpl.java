@@ -40,6 +40,9 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     @Autowired
     private FilePort filePort;
 
+    @Autowired
+    private WebOdmPort webOdmPort;
+
     @Override
     public Project createProject(Project project) {
         project.setStatus(ProjectStatus.CREATED);
@@ -76,6 +79,9 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return project;
         for (Task task : project.getTaskList()) {
             generateTaskSignedUrl(task);
+            if (project.getWebOdmProjectId() != null && task.getWebOdmTaskId() != null && !task.isStatus()) {
+                webOdmPort.getWebOdmTask(project.getWebOdmProjectId(), task.getWebOdmTaskId());
+            }
             if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
             for (Tile tile : task.getTileList()) {
                 generateTileSignedUrl(tile);

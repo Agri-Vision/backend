@@ -5,6 +5,7 @@ import com.research.agrivision.api.adapter.integration.integrate.webodm.request.
 import com.research.agrivision.api.adapter.integration.integrate.webodm.response.AuthenticationResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,10 +15,15 @@ public interface WebOdmClient {
     @PostMapping("/api/token-auth/")
     AuthenticationResponse getAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest);
 
+//    @GetMapping("/api/projects/{projectId}/tasks/{taskId}/download/orthophoto.tif")
+//    String getWebOdmTask(@PathVariable String projectId,
+//                         @PathVariable String taskId,
+//                         @RequestHeader("Authorization") String authorizationHeader);
+
     @GetMapping("/api/projects/{projectId}/tasks/{taskId}/download/orthophoto.tif")
-    String getWebOdmTask(@PathVariable String projectId,
-                         @PathVariable String taskId,
-                         @RequestHeader("Authorization") String authorizationHeader);
+    ResponseEntity<byte[]> getWebOdmTask(@PathVariable String projectId,
+                                         @PathVariable String taskId,
+                                         @RequestHeader("Authorization") String authorizationHeader);
 
     @PostMapping("/api/projects/")
     String createWebOdmProject(@RequestBody ProjectRequest projectRequest,
