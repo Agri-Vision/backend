@@ -11,4 +11,6 @@ public interface MlUseCase {
     String getDiseaseModel(DiseaseRequest diseaseRequest);
 
     String getStressModel(DiseaseRequest diseaseRequest);
+
+    String getYieldModel(DiseaseRequest diseaseRequest);
 }

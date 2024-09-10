@@ -3,6 +3,7 @@ package com.research.agrivision.api.adapter.jpa;
 import com.research.agrivision.api.adapter.clients.DiseaseClient;
 import com.research.agrivision.api.adapter.clients.MlClient;
 import com.research.agrivision.api.adapter.clients.StressClient;
+import com.research.agrivision.api.adapter.clients.YieldClient;
 import com.research.agrivision.api.adapter.integration.integrate.sample.response.ModelResponse;
 import com.research.agrivision.api.adapter.integration.integrate.sample.response.StressResponse;
 import com.research.agrivision.business.entity.ml.sample.DiseaseRequest;
@@ -24,6 +25,9 @@ public class MlPersistentAdapter implements MlPort {
 
     @Autowired
     private StressClient stressClient;
+
+    @Autowired
+    private YieldClient yieldClient;
 
     @Override
     public String getSampleModel(SampleModelRequest request, String authToken) {
@@ -58,5 +62,13 @@ public class MlPersistentAdapter implements MlPort {
 //        soil_moisture = 271.5714
 //        pressure = 95037.1428571429
 //        altitude = 551.428571428571
+    }
+
+    @Override
+    public String getYieldModel(DiseaseRequest diseaseRequest) {
+        com.research.agrivision.api.adapter.integration.integrate.sample.request.DiseaseRequest disRequest =
+                mapper.map(diseaseRequest, com.research.agrivision.api.adapter.integration.integrate.sample.request.DiseaseRequest.class);
+        ModelResponse modelResponse = yieldClient.getYieldModel(disRequest);
+        return modelResponse.getPrediction().get(0).toString();
     }
 }

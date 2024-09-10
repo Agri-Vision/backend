@@ -26,7 +26,8 @@ client:
   model: https://example-model-dep-workspa-ugqxl.eastus.inference.ml.azure.com
   model-token: ${TOKEN}
   disease: https://636a-34-125-197-242.ngrok-free.app
-  stress: https://5eb0-34-19-35-21.ngrok-free.app
+  stress: https://9aaf-34-16-181-30.ngrok-free.app
+  yield: https://8ec9-34-91-168-199.ngrok-free.app
 
 web-odm:
   username: DinukaKariyawasam
