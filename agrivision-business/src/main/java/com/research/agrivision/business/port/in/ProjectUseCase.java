@@ -30,4 +30,6 @@ public interface ProjectUseCase {
     List<Project> getAllProjectsByStatus(ProjectStatus status);
 
     Tile getTileById(Long tileId);
+
+    List<Tile> getAllTiles();
 }
