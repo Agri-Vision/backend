@@ -212,4 +212,12 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
         }
         return null;
     }
+
+    @Override
+    public List<com.research.agrivision.business.entity.Tile> getAllTiles() {
+        return tileRepository.findAll().stream()
+                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Tile::getLastModifiedDate).reversed())
+                .map(tile -> mapper.map(tile, com.research.agrivision.business.entity.Tile.class))
+                .toList();
+    }
 }

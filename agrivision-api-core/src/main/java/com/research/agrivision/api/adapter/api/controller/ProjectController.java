@@ -1,6 +1,7 @@
 package com.research.agrivision.api.adapter.api.controller;
 
 import com.research.agrivision.business.entity.Project;
+import com.research.agrivision.business.entity.Tile;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.port.in.ProjectUseCase;
 import org.modelmapper.ModelMapper;
@@ -85,5 +86,14 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(projectList);
+    }
+
+    @GetMapping("/tiles")
+    public ResponseEntity<List<Tile>> getAllTiles() {
+        List<Tile> tileList = projectService.getAllTiles();
+        if (tileList == null || tileList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(tileList);
     }
 }
