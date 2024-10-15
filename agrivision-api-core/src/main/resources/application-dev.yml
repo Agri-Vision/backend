@@ -2,9 +2,9 @@ server:
   port: 8080
 spring:
   datasource:
-    url: jdbc:postgresql://pg-ca549d6e-10a8-48dd-ab1e-63a485e8f57a-agrivisi1687267950-chor.k.aivencloud.com:11903/dev-av?sslmode=require
-    username: avnadmin
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://asqorrrtd2.m45t3jg8lq.tsdb.cloud.timescale.com:36605/tsdb?sslmode=require
+    username: tsdbadmin
+    password: cml11blngbjg4cg9
     driverClassName: org.postgresql.Driver
   http:
     converters.preferred-json-mapper: jackson
