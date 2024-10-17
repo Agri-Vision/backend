@@ -32,4 +32,10 @@ public interface ProjectUseCase {
     Tile getTileById(Long tileId);
 
     List<Tile> getAllTiles();
+
+    Task getRgbTaskByProjectId(Long id);
+
+    Task getTaskById(Long id);
+
+    void updateTask(Task task);
 }
