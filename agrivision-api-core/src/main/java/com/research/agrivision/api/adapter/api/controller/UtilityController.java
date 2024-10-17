@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Slf4j
@@ -31,5 +32,12 @@ public class UtilityController {
         String fileUrl = fileService.getSignedUrl(fileName);
         if (fileUrl == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         return ResponseEntity.ok(new CommonResponse(fileUrl));
+    }
+
+    @PostMapping("/file/upload/tiff")
+    public ResponseEntity<CommonResponse> uploadTiffFile(@RequestBody MultipartFile file) {
+        String fileName = fileService.uploadTiffFile(file);
+        if (fileName == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        return ResponseEntity.ok(new CommonResponse(fileName));
     }
 }
