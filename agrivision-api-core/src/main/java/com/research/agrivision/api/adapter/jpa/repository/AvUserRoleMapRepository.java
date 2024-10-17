@@ -10,4 +10,5 @@ import java.util.List;
 public interface AvUserRoleMapRepository extends JpaRepository<AvUserRoleMap, Long> {
     AvUserRoleMap findAvUserRoleMapByUserId(Long id);
     List<AvUserRoleMap> findAvUserRoleMapsByRoleId(Long id);
+    List<AvUserRoleMap> findAvUserRoleMapsByRoleRoleNameIgnoreCase(String roleName);
 }

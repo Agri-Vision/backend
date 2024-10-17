@@ -19,4 +19,6 @@ public interface GetUserPort {
     List<User> getAllUsers();
 
     List<User> getAllUsersByRole(Long roleId);
+
+    List<User> getAllUsersByRoleName(String roleName);
 }
