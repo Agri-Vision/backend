@@ -14,6 +14,11 @@ public class Task extends BaseEntity {
     private String webOdmTaskId;
     private String mapImage;
     private TaskType taskType;
+    private String mapImagePng;
+    private String upperLat;
+    private String lowerLat;
+    private String upperLng;
+    private String lowerLng;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean status;

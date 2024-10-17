@@ -20,4 +20,10 @@ public class Task extends BaseEntity {
     private TaskType taskType;
     private List<Tile> tileList;
     private boolean status;
+    private String mapImagePng;
+    private String mapImagePngUrl;
+    private String upperLat;
+    private String lowerLat;
+    private String upperLng;
+    private String lowerLng;
 }

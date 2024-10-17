@@ -75,7 +75,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
 
     @Override
     public Project updateProject(Project request) {
-        request.setStatus(ProjectStatus.UPCOMING);
+        request.setStatus(ProjectStatus.PENDING);
         Project project = saveProjectPort.updateProject(request);
         if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return project;
         for (Task task : project.getTaskList()) {
@@ -166,10 +166,38 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         return getTilePort.getAllTiles();
     }
 
+    @Override
+    public Task getRgbTaskByProjectId(Long id) {
+        Task task = getTilePort.getRgbTaskByProjectId(id);
+        if (task != null) {
+            generateTaskSignedUrl(task);
+            if (task.getTileList() != null && !task.getTileList().isEmpty()) {
+                for (Tile tile : task.getTileList()) {
+                    generateTileSignedUrl(tile);
+                }
+            }
+        }
+        return task;
+    }
+
+    @Override
+    public Task getTaskById(Long id) {
+        return getTaskPort.getTaskById(id);
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        saveTaskPort.updateTask(task);
+    }
+
     private void generateTaskSignedUrl(Task task) {
         if(task.getMapImage() != null) {
             String imgName = task.getMapImage();
             task.setMapImageUrl(filePort.generateSignedUrl(imgName));
+        }
+        if(task.getMapImagePng() != null) {
+            String pngName = task.getMapImagePng();
+            task.setMapImagePngUrl(filePort.generateSignedUrl(pngName));
         }
     }
 
