@@ -6,6 +6,7 @@ import com.research.agrivision.business.entity.Project;
 import com.research.agrivision.business.entity.imageTool.ToolReadings;
 import com.research.agrivision.business.entity.ml.sample.DiseaseRequest;
 import com.research.agrivision.business.enums.ProjectStatus;
+import com.research.agrivision.business.enums.TaskType;
 import com.research.agrivision.business.port.out.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,6 +136,15 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     }
 
     @Override
+    public com.research.agrivision.business.entity.Task getTaskById(Long id) {
+        Optional<com.research.agrivision.api.adapter.jpa.entity.Task> task = taskRepository.findById(id);
+        if (task.isPresent()) {
+            return mapper.map(task, com.research.agrivision.business.entity.Task.class);
+        }
+        return null;
+    }
+
+    @Override
     public void createTile(ToolReadings toolReadings) {
         Tile tile = new Tile();
         com.research.agrivision.api.adapter.jpa.entity.Task task = taskRepository.findByWebOdmTaskId(toolReadings.getTaskId()).orElse(null);
@@ -219,5 +229,29 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
                 .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Tile::getLastModifiedDate).reversed())
                 .map(tile -> mapper.map(tile, com.research.agrivision.business.entity.Tile.class))
                 .toList();
+    }
+
+    @Override
+    public com.research.agrivision.business.entity.Task getRgbTaskByProjectId(Long id) {
+        return taskRepository.findAllByProjectIdAndTaskType(id, TaskType.RGB).stream()
+                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Task::getLastModifiedDate).reversed())
+                .map(task -> mapper.map(task, com.research.agrivision.business.entity.Task.class))
+                .findFirst()
+                .orElse(null);
+
+    }
+
+    @Override
+    public void updateTask(com.research.agrivision.business.entity.Task task) {
+        Optional<com.research.agrivision.api.adapter.jpa.entity.Task> optionalTask = taskRepository.findById(task.getId());
+        if (optionalTask.isPresent()) {
+            Task dbTask = optionalTask.get();
+            dbTask.setMapImagePng(task.getMapImagePng());
+            dbTask.setLowerLat(task.getLowerLat());
+            dbTask.setUpperLat(task.getUpperLat());
+            dbTask.setLowerLng(task.getLowerLng());
+            dbTask.setUpperLng(task.getUpperLng());
+            taskRepository.save(dbTask);
+        }
     }
 }

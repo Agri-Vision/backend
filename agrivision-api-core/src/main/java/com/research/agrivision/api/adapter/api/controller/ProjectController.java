@@ -1,6 +1,8 @@
 package com.research.agrivision.api.adapter.api.controller;
 
+import com.research.agrivision.api.adapter.api.response.CommonResponse;
 import com.research.agrivision.business.entity.Project;
+import com.research.agrivision.business.entity.Task;
 import com.research.agrivision.business.entity.Tile;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.port.in.ProjectUseCase;
@@ -95,5 +97,36 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(tileList);
+    }
+
+    @GetMapping("/rgb/task/{id}")
+    public ResponseEntity<Task> getRgbTaskByProjectId(@PathVariable Long id) {
+        Task task = projectService.getRgbTaskByProjectId(id);
+        if (task == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(task);
+    }
+
+    @PutMapping("/task")
+    public ResponseEntity<CommonResponse> updateProject(@RequestBody final Task request) {
+        if (request == null || request.getId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Task task = projectService.getTaskById(request.getId());
+
+        if (task == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        task.setMapImagePng(request.getMapImagePng());
+        task.setLowerLat(request.getLowerLat());
+        task.setUpperLat(request.getUpperLat());
+        task.setLowerLng(request.getLowerLng());
+        task.setUpperLng(request.getUpperLng());
+
+        projectService.updateTask(task);
+        return ResponseEntity.ok(new CommonResponse("Success"));
     }
 }
