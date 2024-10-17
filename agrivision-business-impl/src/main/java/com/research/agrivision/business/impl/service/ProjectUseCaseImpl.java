@@ -1,8 +1,6 @@
 package com.research.agrivision.business.impl.service;
 
-import com.research.agrivision.business.entity.Project;
-import com.research.agrivision.business.entity.Task;
-import com.research.agrivision.business.entity.Tile;
+import com.research.agrivision.business.entity.*;
 import com.research.agrivision.business.entity.imageTool.ToolReadings;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.port.in.ProjectUseCase;
@@ -62,6 +60,14 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     @Override
     public Project getProjectById(Long id) {
         Project project = getProjectPort.getProjectById(id);
+
+        if (project != null && project.getAgent() != null) {
+            generateAgentSignedUrl(project.getAgent());
+        }
+        if (project != null && project.getPlantation() != null) {
+            generatePlantationSignedUrl(project.getPlantation());
+        }
+
         if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return project;
         for (Task task : project.getTaskList()) {
             generateTaskSignedUrl(task);
@@ -95,6 +101,14 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     public List<Project> getAllProjects() {
         List<Project> projectList = getProjectPort.getAllProjects();
         for (Project project : projectList) {
+
+            if (project != null && project.getAgent() != null) {
+                generateAgentSignedUrl(project.getAgent());
+            }
+            if (project != null && project.getPlantation() != null) {
+                generatePlantationSignedUrl(project.getPlantation());
+            }
+
             if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return projectList;
             for (Task task : project.getTaskList()) {
                 generateTaskSignedUrl(task);
@@ -111,6 +125,12 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     public List<Project> getAllProjectsByPlantationId(Long id) {
         List<Project> projectList = getProjectPort.getAllProjectsByPlantationId(id);
         for (Project project : projectList) {
+            if (project != null && project.getAgent() != null) {
+                generateAgentSignedUrl(project.getAgent());
+            }
+            if (project != null && project.getPlantation() != null) {
+                generatePlantationSignedUrl(project.getPlantation());
+            }
             if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return projectList;
             for (Task task : project.getTaskList()) {
                 generateTaskSignedUrl(task);
@@ -142,6 +162,13 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     public List<Project> getAllProjectsByStatus(ProjectStatus status) {
         List<Project> projectList = getProjectPort.getAllProjectsByStatus(status);
         for (Project project : projectList) {
+            if (project != null && project.getAgent() != null) {
+                generateAgentSignedUrl(project.getAgent());
+            }
+            if (project != null && project.getPlantation() != null) {
+                generatePlantationSignedUrl(project.getPlantation());
+            }
+
             if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return projectList;
             for (Task task : project.getTaskList()) {
                 generateTaskSignedUrl(task);
@@ -205,6 +232,20 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         if(tile !=null && tile.getTileImage() != null) {
             String imgName = tile.getTileImage();
             tile.setTileImageUrl(filePort.generateSignedUrl(imgName));
+        }
+    }
+
+    private void generatePlantationSignedUrl(Plantation plantation) {
+        if(plantation !=null && plantation.getPlantationImg() != null) {
+            String imgName = plantation.getPlantationImg();
+            plantation.setPlantationImgUrl(filePort.generateSignedUrl(imgName));
+        }
+    }
+
+    private void generateAgentSignedUrl(User agent) {
+        if(agent !=null && agent.getProfileImg() != null) {
+            String imgName = agent.getProfileImg();
+            agent.setProfileImgUrl(filePort.generateSignedUrl(imgName));
         }
     }
 }
