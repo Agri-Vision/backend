@@ -201,4 +201,29 @@ public class UserManagementPersistentAdapter implements GetUserPort, SaveUserPor
         }
         return userList;
     }
+
+    @Override
+    public List<User> getAllUsersByRoleName(String roleName) {
+        List<AvUserRoleMap> roleMapList = roleMapRepository.findAvUserRoleMapsByRoleRoleNameIgnoreCase(roleName);
+        List<AvUser> users = new ArrayList<>();
+
+        for (AvUserRoleMap roleMap : roleMapList) {
+            users.add(roleMap.getUser());
+        }
+
+        List<User> userList = users.stream()
+                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.AvUser::getLastModifiedDate).reversed())
+                .map(user -> mapper.map(user, com.research.agrivision.business.entity.User.class))
+                .toList();
+        for (User user : userList) {
+            UserRole role = new UserRole();
+            AvUserRoleMap roleMap = roleMapRepository.findAvUserRoleMapByUserId(user.getId());
+            if (roleMap != null) {
+                role = mapper.map(roleMap.getRole(), UserRole.class);
+            }
+            User dbUser = mapper.map(user, com.research.agrivision.business.entity.User.class);
+            dbUser.setRole(role);
+        }
+        return userList;
+    }
 }

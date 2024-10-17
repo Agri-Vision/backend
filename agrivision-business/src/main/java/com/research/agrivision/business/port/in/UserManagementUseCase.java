@@ -29,4 +29,6 @@ public interface UserManagementUseCase {
     User updateUser(User user);
 
     List<User> getAllUsersByRole(Long roleId);
+
+    List<User> getAllUsersByRoleName(String roleName);
 }
