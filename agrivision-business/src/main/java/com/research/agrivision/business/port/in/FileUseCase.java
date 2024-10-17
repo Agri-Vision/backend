@@ -1,6 +1,7 @@
 package com.research.agrivision.business.port.in;
 
 import com.research.hexa.core.UseCase;
+import org.springframework.web.multipart.MultipartFile;
 
 @UseCase
 public interface FileUseCase {
@@ -17,4 +18,6 @@ public interface FileUseCase {
      * @return - signed public url of the file
      */
     String getSignedUrl(String fileName);
+
+    String uploadTiffFile(MultipartFile file);
 }
