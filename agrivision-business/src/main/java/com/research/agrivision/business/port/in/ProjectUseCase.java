@@ -4,6 +4,7 @@ import com.research.agrivision.business.entity.Project;
 import com.research.agrivision.business.entity.Task;
 import com.research.agrivision.business.entity.Tile;
 import com.research.agrivision.business.entity.imageTool.ToolReadings;
+import com.research.agrivision.business.entity.project.ProjectMaps;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.hexa.core.UseCase;
 
@@ -38,4 +39,6 @@ public interface ProjectUseCase {
     Task getTaskById(Long id);
 
     void updateTask(Task task);
+
+    void updateProjectMaps(Long id, ProjectMaps projectMaps);
 }
