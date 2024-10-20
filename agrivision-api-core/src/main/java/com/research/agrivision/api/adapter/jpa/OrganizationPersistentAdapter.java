@@ -81,4 +81,12 @@ public class OrganizationPersistentAdapter implements SaveOrganizationPort, GetO
         }
         return null;
     }
+
+    @Override
+    public List<com.research.agrivision.business.entity.Plantation> getAllPlantations() {
+        return plantationRepository.findAll().stream()
+                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Plantation::getLastModifiedDate).reversed())
+                .map(plantation -> mapper.map(plantation, com.research.agrivision.business.entity.Plantation.class))
+                .toList();
+    }
 }
