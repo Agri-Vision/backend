@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -133,9 +134,16 @@ public class ProjectController {
     }
 
     @PutMapping("/maps/{id}")
-    public ResponseEntity<CommonResponse> updateProjectMaps(@PathVariable Long id, @RequestBody final ProjectMapRequest request) {
-        if (request == null || id == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    public ResponseEntity<CommonResponse> updateProjectMaps(
+            @PathVariable Long id,
+            @RequestParam(value = "rgbMap", required = false) MultipartFile rgbMap,
+            @RequestParam(value = "rMap", required = false) MultipartFile rMap,
+            @RequestParam(value = "gMap", required = false) MultipartFile gMap,
+            @RequestParam(value = "reMap", required = false) MultipartFile reMap,
+            @RequestParam(value = "nirMap", required = false) MultipartFile nirMap) {
+
+        if (rgbMap == null && rMap == null && gMap == null && reMap == null && nirMap == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResponse("Please upload at least one map"));
         }
 
         Project project = projectService.getProjectById(id);
@@ -144,7 +152,7 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        ProjectMaps projectMaps = modelMapper.map(request, ProjectMaps.class);
+        ProjectMaps projectMaps = new ProjectMaps(rgbMap, rMap, gMap, reMap, nirMap);
 
         projectService.updateProjectMaps(id, projectMaps);
         return ResponseEntity.ok(new CommonResponse("Success"));
