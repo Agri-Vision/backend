@@ -242,10 +242,20 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     }
 
     @Override
+    public com.research.agrivision.business.entity.Task getTaskByProjectIdAndType(Long id, TaskType type) {
+        return taskRepository.findAllByProjectIdAndTaskType(id, type).stream()
+                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Task::getLastModifiedDate).reversed())
+                .map(task -> mapper.map(task, com.research.agrivision.business.entity.Task.class))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
     public void updateTask(com.research.agrivision.business.entity.Task task) {
         Optional<com.research.agrivision.api.adapter.jpa.entity.Task> optionalTask = taskRepository.findById(task.getId());
         if (optionalTask.isPresent()) {
             Task dbTask = optionalTask.get();
+            dbTask.setMapImage(task.getMapImage());
             dbTask.setMapImagePng(task.getMapImagePng());
             dbTask.setLowerLat(task.getLowerLat());
             dbTask.setUpperLat(task.getUpperLat());

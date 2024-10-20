@@ -1,9 +1,11 @@
 package com.research.agrivision.api.adapter.api.controller;
 
+import com.research.agrivision.api.adapter.api.request.ProjectMapRequest;
 import com.research.agrivision.api.adapter.api.response.CommonResponse;
 import com.research.agrivision.business.entity.Project;
 import com.research.agrivision.business.entity.Task;
 import com.research.agrivision.business.entity.Tile;
+import com.research.agrivision.business.entity.project.ProjectMaps;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.port.in.ProjectUseCase;
 import org.modelmapper.ModelMapper;
@@ -127,6 +129,24 @@ public class ProjectController {
         task.setUpperLng(request.getUpperLng());
 
         projectService.updateTask(task);
+        return ResponseEntity.ok(new CommonResponse("Success"));
+    }
+
+    @PutMapping("/maps/{id}")
+    public ResponseEntity<CommonResponse> updateProjectMaps(@PathVariable Long id, @RequestBody final ProjectMapRequest request) {
+        if (request == null || id == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Project project = projectService.getProjectById(id);
+
+        if (project == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        ProjectMaps projectMaps = modelMapper.map(request, ProjectMaps.class);
+
+        projectService.updateProjectMaps(id, projectMaps);
         return ResponseEntity.ok(new CommonResponse("Success"));
     }
 }
