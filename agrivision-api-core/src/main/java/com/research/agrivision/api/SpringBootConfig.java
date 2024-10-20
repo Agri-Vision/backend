@@ -62,4 +62,9 @@ public class SpringBootConfig {
     YieldUseCase yieldUseCase() {
         return new YieldUseCaseImpl();
     }
+
+    @Bean
+    PlantationUseCase plantationUseCase() {
+        return new PlantationUseCaseImpl();
+    }
 }
