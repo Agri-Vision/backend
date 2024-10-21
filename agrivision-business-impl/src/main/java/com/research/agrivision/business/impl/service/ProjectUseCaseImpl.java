@@ -158,24 +158,22 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     }
 
     @Override
-    public void updateProjectMaps(Long id, ProjectMaps projectMaps) {
-        if (projectMaps.getRgbMap() != null) {
-            Task rgbTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.RGB);
-            if (rgbTask != null) {
-                try {
-                    String tifFileName = uploadTiffFile(projectMaps.getRgbMap());
-                    rgbTask.setMapImage(tifFileName);
+    public void updateProjectMaps(Long id, MultipartFile rgbMap) {
+        Task rgbTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.RGB);
+        if (rgbTask != null) {
+            try {
+                String tifFileName = uploadTiffFile(rgbMap);
+                rgbTask.setMapImage(tifFileName);
 
-                    String pngFileName = convertTiffToPng(projectMaps.getRgbMap());
-                    rgbTask.setMapImagePng(pngFileName);
+                String pngFileName = convertTiffToPng(rgbMap);
+                rgbTask.setMapImagePng(pngFileName);
 
-                    extractGeoCoordinates(projectMaps.getRgbMap(), rgbTask);
+                extractGeoCoordinates(rgbMap, rgbTask);
 
-                    generateTaskSignedUrl(rgbTask);
-                    saveTaskPort.updateTask(rgbTask);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                generateTaskSignedUrl(rgbTask);
+                saveTaskPort.updateTask(rgbTask);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

@@ -150,6 +150,10 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResponse("Please upload at least one map"));
         }
 
+        if (rgbMap == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResponse("Please upload rgb map"));
+        }
+
         Project project = projectService.getProjectById(id);
 
         if (project == null) {
@@ -158,7 +162,7 @@ public class ProjectController {
 
         ProjectMaps projectMaps = new ProjectMaps(rgbMap, rMap, gMap, reMap, nirMap);
 
-        projectService.updateProjectMaps(id, projectMaps);
+        projectService.updateProjectMaps(id, rgbMap);
         return ResponseEntity.ok(new CommonResponse("Success"));
     }
 
