@@ -7,6 +7,7 @@ import com.research.agrivision.business.entity.imageTool.ToolReadings;
 import com.research.agrivision.business.entity.project.ProjectMaps;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.hexa.core.UseCase;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public interface ProjectUseCase {
 
     void updateTask(Task task);
 
-    void updateProjectMaps(Long id, ProjectMaps projectMaps);
+    void updateProjectMaps(Long id, MultipartFile rgbMap);
 
     List<Project> getAllProjectsByAgent(Long id);
 }

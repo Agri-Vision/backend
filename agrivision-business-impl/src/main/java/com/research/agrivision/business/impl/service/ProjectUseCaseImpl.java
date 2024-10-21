@@ -7,13 +7,30 @@ import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.enums.TaskType;
 import com.research.agrivision.business.port.in.ProjectUseCase;
 import com.research.agrivision.business.port.out.*;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.geometry.Envelope2D;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.geometry.DirectPosition;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.Base64;
 import java.util.List;
+
+import org.geotools.geometry.DirectPosition2D;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProjectUseCaseImpl implements ProjectUseCase {
@@ -50,102 +67,49 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     @Override
     public Project createProject(Project project) {
         project.setStatus(ProjectStatus.NEW);
-        Project dbProject = saveProjectPort.createProject(project);
-        if (dbProject == null || dbProject.getTaskList() == null || dbProject.getTaskList().isEmpty()) return dbProject;
-        for (Task task : dbProject.getTaskList()) {
-            generateTaskSignedUrl(task);
-            if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-            for (Tile tile : task.getTileList()) {
-                generateTileSignedUrl(tile);
+        if (project.getTaskList() != null && !project.getTaskList().isEmpty()) {
+            for (Task task : project.getTaskList()) {
+                generateTaskSignedUrl(task);
+                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
+                for (Tile tile : task.getTileList()) {
+                    generateTileSignedUrl(tile);
+                }
             }
         }
-        return dbProject;
+        return saveProjectPort.createProject(project);
     }
 
     @Override
     public Project getProjectById(Long id) {
-        Project project = getProjectPort.getProjectById(id);
-
-        if (project != null && project.getAgent() != null) {
-            generateAgentSignedUrl(project.getAgent());
-        }
-        if (project != null && project.getPlantation() != null) {
-            generatePlantationSignedUrl(project.getPlantation());
-        }
-
-        if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return project;
-        for (Task task : project.getTaskList()) {
-            generateTaskSignedUrl(task);
-            if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-            for (Tile tile : task.getTileList()) {
-                generateTileSignedUrl(tile);
-            }
-        }
-        return project;
+        return getProjectPort.getProjectById(id);
     }
 
     @Override
     public Project updateProject(Project request) {
         request.setStatus(ProjectStatus.PENDING);
-        Project project = saveProjectPort.updateProject(request);
-        if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return project;
-        for (Task task : project.getTaskList()) {
-            generateTaskSignedUrl(task);
+        if (request.getTaskList() != null && !request.getTaskList().isEmpty()) {
+            for (Task task : request.getTaskList()) {
+                generateTaskSignedUrl(task);
 //            if (project.getWebOdmProjectId() != null && task.getWebOdmTaskId() != null && !task.isStatus()) {
 //                webOdmPort.getWebOdmTask(project.getWebOdmProjectId(), task.getWebOdmTaskId());
 //            }
-            if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-            for (Tile tile : task.getTileList()) {
-                generateTileSignedUrl(tile);
+                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
+                for (Tile tile : task.getTileList()) {
+                    generateTileSignedUrl(tile);
+                }
             }
         }
-        return project;
+        return saveProjectPort.updateProject(request);
     }
 
     @Override
     public List<Project> getAllProjects() {
-        List<Project> projectList = getProjectPort.getAllProjects();
-        for (Project project : projectList) {
-
-            if (project != null && project.getAgent() != null) {
-                generateAgentSignedUrl(project.getAgent());
-            }
-            if (project != null && project.getPlantation() != null) {
-                generatePlantationSignedUrl(project.getPlantation());
-            }
-
-            if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) continue;
-            for (Task task : project.getTaskList()) {
-                generateTaskSignedUrl(task);
-                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
-            }
-        }
-        return projectList;
+        return getProjectPort.getAllProjects();
     }
 
     @Override
     public List<Project> getAllProjectsByPlantationId(Long id) {
-        List<Project> projectList = getProjectPort.getAllProjectsByPlantationId(id);
-        for (Project project : projectList) {
-            if (project != null && project.getAgent() != null) {
-                generateAgentSignedUrl(project.getAgent());
-            }
-            if (project != null && project.getPlantation() != null) {
-                generatePlantationSignedUrl(project.getPlantation());
-            }
-            if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) continue;
-            for (Task task : project.getTaskList()) {
-                generateTaskSignedUrl(task);
-                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
-            }
-        }
-        return projectList;
+        return getProjectPort.getAllProjectsByPlantationId(id);
     }
 
     @Override
@@ -165,32 +129,12 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
 
     @Override
     public List<Project> getAllProjectsByStatus(ProjectStatus status) {
-        List<Project> projectList = getProjectPort.getAllProjectsByStatus(status);
-        for (Project project : projectList) {
-            if (project != null && project.getAgent() != null) {
-                generateAgentSignedUrl(project.getAgent());
-            }
-            if (project != null && project.getPlantation() != null) {
-                generatePlantationSignedUrl(project.getPlantation());
-            }
-
-            if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) continue;
-            for (Task task : project.getTaskList()) {
-                generateTaskSignedUrl(task);
-                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
-            }
-        }
-        return projectList;
+        return getProjectPort.getAllProjectsByStatus(status);
     }
 
     @Override
     public Tile getTileById(Long tileId) {
-        Tile tile = getTilePort.getTileById(tileId);
-        if(tile != null)generateTileSignedUrl(tile);
-        return tile;
+        return getTilePort.getTileById(tileId);
     }
 
     @Override
@@ -200,16 +144,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
 
     @Override
     public Task getRgbTaskByProjectId(Long id) {
-        Task task = getTaskPort.getRgbTaskByProjectId(id);
-        if (task != null) {
-            generateTaskSignedUrl(task);
-            if (task.getTileList() != null && !task.getTileList().isEmpty()) {
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
-            }
-        }
-        return task;
+        return getTaskPort.getRgbTaskByProjectId(id);
     }
 
     @Override
@@ -223,75 +158,29 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     }
 
     @Override
-    public void updateProjectMaps(Long id, ProjectMaps projectMaps) {
-        if (projectMaps.getRgbMap() != null) {
-            Task rgbTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.RGB);
-            if (rgbTask != null) {
-                String fileName = uploadTiffFile(projectMaps.getRgbMap());
-                rgbTask.setMapImage(fileName);
-                //TODO set lat, lng and png image if needed
+    public void updateProjectMaps(Long id, MultipartFile rgbMap) {
+        Task rgbTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.RGB);
+        if (rgbTask != null) {
+            try {
+                String tifFileName = uploadTiffFile(rgbMap);
+                rgbTask.setMapImage(tifFileName);
+
+                String pngFileName = convertTiffToPng(rgbMap);
+                rgbTask.setMapImagePng(pngFileName);
+
+                extractGeoCoordinates(rgbMap, rgbTask);
+
+                generateTaskSignedUrl(rgbTask);
                 saveTaskPort.updateTask(rgbTask);
-            }
-        }
-
-        if (projectMaps.getRMap() != null) {
-            Task rTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.R);
-            if (rTask != null) {
-                String fileName = uploadTiffFile(projectMaps.getRMap());
-                rTask.setMapImage(fileName);
-                saveTaskPort.updateTask(rTask);
-            }
-        }
-
-        if (projectMaps.getGMap() != null) {
-            Task gTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.G);
-            if (gTask != null) {
-                String fileName = uploadTiffFile(projectMaps.getGMap());
-                gTask.setMapImage(fileName);
-                saveTaskPort.updateTask(gTask);
-            }
-        }
-
-        if (projectMaps.getReMap() != null) {
-            Task reTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.RE);
-            if (reTask != null) {
-                String fileName = uploadTiffFile(projectMaps.getReMap());
-                reTask.setMapImage(fileName);
-                saveTaskPort.updateTask(reTask);
-            }
-        }
-
-        if (projectMaps.getNirMap() != null) {
-            Task nirTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.NIR);
-            if (nirTask != null) {
-                String fileName = uploadTiffFile(projectMaps.getNirMap());
-                nirTask.setMapImage(fileName);
-                saveTaskPort.updateTask(nirTask);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
     @Override
     public List<Project> getAllProjectsByAgent(Long id) {
-        List<Project> projectList = getProjectPort.getAllProjectsByAgent(id);
-        for (Project project : projectList) {
-            if (project != null && project.getAgent() != null) {
-                generateAgentSignedUrl(project.getAgent());
-            }
-            if (project != null && project.getPlantation() != null) {
-                generatePlantationSignedUrl(project.getPlantation());
-            }
-
-            if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) continue;
-            for (Task task : project.getTaskList()) {
-                generateTaskSignedUrl(task);
-                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
-            }
-        }
-        return projectList;
+        return getProjectPort.getAllProjectsByAgent(id);
     }
 
     private void generateTaskSignedUrl(Task task) {
@@ -343,5 +232,71 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private String convertTiffToPng(MultipartFile tifFile) {
+        try {
+            BufferedImage tifImage = ImageIO.read(tifFile.getInputStream());
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(tifImage, "png", baos);
+
+            byte[] pngBytes = baos.toByteArray();
+
+            MultipartFile pngMultipartFile = new MockMultipartFile(
+                    "converted_image",
+                    "converted_image.png",
+                    "image/png",
+                    pngBytes
+            );
+
+            return uploadTiffFile(pngMultipartFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Error converting .tif to .png", e);
+        }
+    }
+
+    private void extractGeoCoordinates(MultipartFile tifFile, Task task) {
+        try {
+            File file = convertMultipartFileToFile(tifFile);
+
+            AbstractGridCoverage2DReader reader = new GeoTiffReader(file);
+            GridCoverage2D coverage = reader.read(null);
+
+            Envelope2D envelope = coverage.getEnvelope2D();
+
+            CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem2D();
+
+            CoordinateReferenceSystem targetCRS = DefaultGeographicCRS.WGS84; // geographic CRS (EPSG:4326)
+            MathTransform transform = CRS.findMathTransform(crs, targetCRS, true);
+
+            // create DirectPosition objects for lower and upper corners
+            DirectPosition lowerCorner = new DirectPosition2D(envelope.getMinimum(0), envelope.getMinimum(1));
+            DirectPosition upperCorner = new DirectPosition2D(envelope.getMaximum(0), envelope.getMaximum(1));
+
+            DirectPosition transformedLower = transform.transform(lowerCorner, null);
+            DirectPosition transformedUpper = transform.transform(upperCorner, null);
+
+            // extract the geographic bounds
+            double lowerLng = transformedLower.getOrdinate(0);
+            double lowerLat = transformedLower.getOrdinate(1);
+            double upperLng = transformedUpper.getOrdinate(0);
+            double upperLat = transformedUpper.getOrdinate(1);
+
+            task.setUpperLat(String.valueOf(upperLat));
+            task.setLowerLat(String.valueOf(lowerLat));
+            task.setUpperLng(String.valueOf(upperLng));
+            task.setLowerLng(String.valueOf(lowerLng));
+        } catch (IOException | TransformException e) {
+            throw new RuntimeException("Error reading GeoTIFF file", e);
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+        File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + multipartFile.getOriginalFilename());
+        multipartFile.transferTo(convFile);
+        return convFile;
     }
 }

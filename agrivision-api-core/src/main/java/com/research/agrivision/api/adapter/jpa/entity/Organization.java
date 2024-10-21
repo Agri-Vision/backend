@@ -14,6 +14,7 @@ public class Organization extends BaseEntity {
     private String orgName;
     private String district;
     private String orgImage;
+    private String orgImageUrl;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "organizationId")
