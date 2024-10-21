@@ -19,17 +19,7 @@ public class PlantationUseCaseImpl implements PlantationUseCase {
 
     @Override
     public List<Plantation> getAllPlantations() {
-        List<Plantation> plantationList = getPlantationPort.getAllPlantations();
-
-        if (plantationList == null || plantationList.isEmpty()) {
-            return plantationList;
-        }
-
-        for (Plantation plantation : plantationList) {
-            generatePlantationSignedUrl(plantation);
-        }
-
-        return plantationList;
+        return getPlantationPort.getAllPlantations();
     }
 
     private void generatePlantationSignedUrl(Plantation plantation) {

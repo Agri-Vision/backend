@@ -37,7 +37,7 @@ public class FileClient implements FilePort {
     public String generateSignedUrl(String fileName) {
         BlobContainerSasPermission blobContainerSasPermission = new BlobContainerSasPermission().setReadPermission(true);
         BlobServiceSasSignatureValues builder = new BlobServiceSasSignatureValues(OffsetDateTime.now()
-                .plus(1, ChronoUnit.HOURS),
+                .plus(10, ChronoUnit.YEARS),
                 blobContainerSasPermission).setProtocol(SasProtocol.HTTPS_ONLY);
 
         if (fileName.contains(".pdf")) {

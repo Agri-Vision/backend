@@ -26,11 +26,10 @@ public class UserManagementUseCaseImpl implements UserManagementUseCase {
     @Override
     public User createUser(User user) {
         String email = user.getEmail().toLowerCase();
+        generateSignedUrl(user);
         user.setEmail(email);
         user.setIdentityId(String.valueOf(UUID.randomUUID()));
-        User createdUser = saveUserPort.createUser(user);
-        generateSignedUrl(createdUser);
-        return createdUser;
+        return saveUserPort.createUser(user);
     }
 
     @Override
@@ -64,7 +63,6 @@ public class UserManagementUseCaseImpl implements UserManagementUseCase {
         if (email == null || email.isEmpty()) return null;
         User user = getUserPort.getUserByEmail(email);
         if (user == null) return null;
-        generateSignedUrl(user);
         return user;
     }
 
@@ -73,47 +71,31 @@ public class UserManagementUseCaseImpl implements UserManagementUseCase {
         User user = getUserPort.getUserById(id);
         if (user == null) return null;
         user.setPassword(null);
-        generateSignedUrl(user);
         return user;
     }
 
     @Override
     public List<User> getAllUsers() {
-        List<User> users = getUserPort.getAllUsers();
-        for (User user : users) {
-            user.setPassword(null);
-            generateSignedUrl(user);
-        }
-        return users;
+        return getUserPort.getAllUsers();
     }
 
     @Override
     public User updateUser(User user) {
         if (getUserPort.getUserById(user.getId()) == null) return null;
+        generateSignedUrl(user);
         User updateduser = saveUserPort.updateUser(user);
         updateduser.setPassword(null);
-        generateSignedUrl(updateduser);
         return updateduser;
     }
 
     @Override
     public List<User> getAllUsersByRole(Long roleId) {
-        List<User> users = getUserPort.getAllUsersByRole(roleId);
-        for (User user : users) {
-            user.setPassword(null);
-            generateSignedUrl(user);
-        }
-        return users;
+        return getUserPort.getAllUsersByRole(roleId);
     }
 
     @Override
     public List<User> getAllUsersByRoleName(String roleName) {
-        List<User> users = getUserPort.getAllUsersByRoleName(roleName);
-        for (User user : users) {
-            user.setPassword(null);
-            generateSignedUrl(user);
-        }
-        return users;
+        return getUserPort.getAllUsersByRoleName(roleName);
     }
 
     private void generateSignedUrl(User user) {
