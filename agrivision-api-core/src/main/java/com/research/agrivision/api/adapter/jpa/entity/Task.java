@@ -13,8 +13,10 @@ import java.util.List;
 public class Task extends BaseEntity {
     private String webOdmTaskId;
     private String mapImage;
+    private String mapImageUrl;
     private TaskType taskType;
     private String mapImagePng;
+    private String mapImagePngUrl;
     private String upperLat;
     private String lowerLat;
     private String upperLng;

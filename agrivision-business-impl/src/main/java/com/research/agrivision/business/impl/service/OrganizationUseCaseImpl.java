@@ -31,55 +31,34 @@ public class OrganizationUseCaseImpl implements OrganizationUseCase {
 
     @Override
     public Organization createOrganization(Organization organization) {
-        Organization dbOrganization = saveOrganizationPort.createOrganization(organization);
-        generateOrganizationSignedUrl(dbOrganization);
-        if (dbOrganization.getPlantationList() != null && !dbOrganization.getPlantationList().isEmpty()) {
-            for (Plantation plantation : dbOrganization.getPlantationList()) {
-                generatePlantationSignedUrl(plantation);
-            }
-        }
-        return dbOrganization;
-    }
-
-    @Override
-    public Organization getOrganizationById(Long id) {
-        Organization organization = getOrganizationPort.getOrganizationById(id);
-        if (organization == null) return null;
         generateOrganizationSignedUrl(organization);
         if (organization.getPlantationList() != null && !organization.getPlantationList().isEmpty()) {
             for (Plantation plantation : organization.getPlantationList()) {
                 generatePlantationSignedUrl(plantation);
             }
         }
-        return organization;
+        return saveOrganizationPort.createOrganization(organization);
+    }
+
+    @Override
+    public Organization getOrganizationById(Long id) {
+        return getOrganizationPort.getOrganizationById(id);
     }
 
     @Override
     public List<Organization> getAllOrganizations() {
-        List<Organization> organizationList = getOrganizationPort.getAllOrganizations();
-        if (organizationList == null || organizationList.isEmpty()) return organizationList;
-        for (Organization organization : organizationList) {
-            generateOrganizationSignedUrl(organization);
-
-            if (organization.getPlantationList() != null && !organization.getPlantationList().isEmpty()) {
-                for (Plantation plantation : organization.getPlantationList()) {
-                    generatePlantationSignedUrl(plantation);
-                }
-            }
-        }
-        return organizationList;
+        return getOrganizationPort.getAllOrganizations();
     }
 
     @Override
     public Organization updateOrganization(Organization organization) {
-        Organization dbOrganization = saveOrganizationPort.updateOrganization(organization);
-        generateOrganizationSignedUrl(dbOrganization);
-        if (dbOrganization.getPlantationList() != null && !dbOrganization.getPlantationList().isEmpty()) {
-            for (Plantation plantation : dbOrganization.getPlantationList()) {
+        generateOrganizationSignedUrl(organization);
+        if (organization.getPlantationList() != null && !organization.getPlantationList().isEmpty()) {
+            for (Plantation plantation : organization.getPlantationList()) {
                 generatePlantationSignedUrl(plantation);
             }
         }
-        return dbOrganization;
+        return saveOrganizationPort.updateOrganization(organization);
     }
 
     @Override

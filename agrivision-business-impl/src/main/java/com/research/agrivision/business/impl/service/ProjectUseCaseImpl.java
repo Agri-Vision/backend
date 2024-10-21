@@ -50,102 +50,49 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     @Override
     public Project createProject(Project project) {
         project.setStatus(ProjectStatus.NEW);
-        Project dbProject = saveProjectPort.createProject(project);
-        if (dbProject == null || dbProject.getTaskList() == null || dbProject.getTaskList().isEmpty()) return dbProject;
-        for (Task task : dbProject.getTaskList()) {
-            generateTaskSignedUrl(task);
-            if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-            for (Tile tile : task.getTileList()) {
-                generateTileSignedUrl(tile);
+        if (project.getTaskList() != null && !project.getTaskList().isEmpty()) {
+            for (Task task : project.getTaskList()) {
+                generateTaskSignedUrl(task);
+                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
+                for (Tile tile : task.getTileList()) {
+                    generateTileSignedUrl(tile);
+                }
             }
         }
-        return dbProject;
+        return saveProjectPort.createProject(project);
     }
 
     @Override
     public Project getProjectById(Long id) {
-        Project project = getProjectPort.getProjectById(id);
-
-        if (project != null && project.getAgent() != null) {
-            generateAgentSignedUrl(project.getAgent());
-        }
-        if (project != null && project.getPlantation() != null) {
-            generatePlantationSignedUrl(project.getPlantation());
-        }
-
-        if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return project;
-        for (Task task : project.getTaskList()) {
-            generateTaskSignedUrl(task);
-            if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-            for (Tile tile : task.getTileList()) {
-                generateTileSignedUrl(tile);
-            }
-        }
-        return project;
+        return getProjectPort.getProjectById(id);
     }
 
     @Override
     public Project updateProject(Project request) {
         request.setStatus(ProjectStatus.PENDING);
-        Project project = saveProjectPort.updateProject(request);
-        if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) return project;
-        for (Task task : project.getTaskList()) {
-            generateTaskSignedUrl(task);
+        if (request.getTaskList() != null && !request.getTaskList().isEmpty()) {
+            for (Task task : request.getTaskList()) {
+                generateTaskSignedUrl(task);
 //            if (project.getWebOdmProjectId() != null && task.getWebOdmTaskId() != null && !task.isStatus()) {
 //                webOdmPort.getWebOdmTask(project.getWebOdmProjectId(), task.getWebOdmTaskId());
 //            }
-            if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-            for (Tile tile : task.getTileList()) {
-                generateTileSignedUrl(tile);
+                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
+                for (Tile tile : task.getTileList()) {
+                    generateTileSignedUrl(tile);
+                }
             }
         }
-        return project;
+        return saveProjectPort.updateProject(request);
     }
 
     @Override
     public List<Project> getAllProjects() {
-        List<Project> projectList = getProjectPort.getAllProjects();
-        for (Project project : projectList) {
-
-            if (project != null && project.getAgent() != null) {
-                generateAgentSignedUrl(project.getAgent());
-            }
-            if (project != null && project.getPlantation() != null) {
-                generatePlantationSignedUrl(project.getPlantation());
-            }
-
-            if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) continue;
-            for (Task task : project.getTaskList()) {
-                generateTaskSignedUrl(task);
-                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
-            }
-        }
-        return projectList;
+        return getProjectPort.getAllProjects();
     }
 
     @Override
     public List<Project> getAllProjectsByPlantationId(Long id) {
-        List<Project> projectList = getProjectPort.getAllProjectsByPlantationId(id);
-        for (Project project : projectList) {
-            if (project != null && project.getAgent() != null) {
-                generateAgentSignedUrl(project.getAgent());
-            }
-            if (project != null && project.getPlantation() != null) {
-                generatePlantationSignedUrl(project.getPlantation());
-            }
-            if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) continue;
-            for (Task task : project.getTaskList()) {
-                generateTaskSignedUrl(task);
-                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
-            }
-        }
-        return projectList;
+        return getProjectPort.getAllProjectsByPlantationId(id);
     }
 
     @Override
@@ -165,32 +112,12 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
 
     @Override
     public List<Project> getAllProjectsByStatus(ProjectStatus status) {
-        List<Project> projectList = getProjectPort.getAllProjectsByStatus(status);
-        for (Project project : projectList) {
-            if (project != null && project.getAgent() != null) {
-                generateAgentSignedUrl(project.getAgent());
-            }
-            if (project != null && project.getPlantation() != null) {
-                generatePlantationSignedUrl(project.getPlantation());
-            }
-
-            if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) continue;
-            for (Task task : project.getTaskList()) {
-                generateTaskSignedUrl(task);
-                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
-            }
-        }
-        return projectList;
+        return getProjectPort.getAllProjectsByStatus(status);
     }
 
     @Override
     public Tile getTileById(Long tileId) {
-        Tile tile = getTilePort.getTileById(tileId);
-        if(tile != null)generateTileSignedUrl(tile);
-        return tile;
+        return getTilePort.getTileById(tileId);
     }
 
     @Override
@@ -200,16 +127,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
 
     @Override
     public Task getRgbTaskByProjectId(Long id) {
-        Task task = getTaskPort.getRgbTaskByProjectId(id);
-        if (task != null) {
-            generateTaskSignedUrl(task);
-            if (task.getTileList() != null && !task.getTileList().isEmpty()) {
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
-            }
-        }
-        return task;
+        return getTaskPort.getRgbTaskByProjectId(id);
     }
 
     @Override
@@ -229,6 +147,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
             if (rgbTask != null) {
                 String fileName = uploadTiffFile(projectMaps.getRgbMap());
                 rgbTask.setMapImage(fileName);
+                generateTaskSignedUrl(rgbTask);
                 //TODO set lat, lng and png image if needed
                 saveTaskPort.updateTask(rgbTask);
             }
@@ -239,6 +158,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
             if (rTask != null) {
                 String fileName = uploadTiffFile(projectMaps.getRMap());
                 rTask.setMapImage(fileName);
+                generateTaskSignedUrl(rTask);
                 saveTaskPort.updateTask(rTask);
             }
         }
@@ -248,6 +168,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
             if (gTask != null) {
                 String fileName = uploadTiffFile(projectMaps.getGMap());
                 gTask.setMapImage(fileName);
+                generateTaskSignedUrl(gTask);
                 saveTaskPort.updateTask(gTask);
             }
         }
@@ -257,6 +178,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
             if (reTask != null) {
                 String fileName = uploadTiffFile(projectMaps.getReMap());
                 reTask.setMapImage(fileName);
+                generateTaskSignedUrl(reTask);
                 saveTaskPort.updateTask(reTask);
             }
         }
@@ -266,6 +188,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
             if (nirTask != null) {
                 String fileName = uploadTiffFile(projectMaps.getNirMap());
                 nirTask.setMapImage(fileName);
+                generateTaskSignedUrl(nirTask);
                 saveTaskPort.updateTask(nirTask);
             }
         }
@@ -273,25 +196,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
 
     @Override
     public List<Project> getAllProjectsByAgent(Long id) {
-        List<Project> projectList = getProjectPort.getAllProjectsByAgent(id);
-        for (Project project : projectList) {
-            if (project != null && project.getAgent() != null) {
-                generateAgentSignedUrl(project.getAgent());
-            }
-            if (project != null && project.getPlantation() != null) {
-                generatePlantationSignedUrl(project.getPlantation());
-            }
-
-            if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) continue;
-            for (Task task : project.getTaskList()) {
-                generateTaskSignedUrl(task);
-                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
-            }
-        }
-        return projectList;
+        return getProjectPort.getAllProjectsByAgent(id);
     }
 
     private void generateTaskSignedUrl(Task task) {

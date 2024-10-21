@@ -17,6 +17,7 @@ public class AvUser extends BaseEntity {
     private boolean internal;
     private boolean status;
     private String profileImg;
+    private String profileImgUrl;
     private Double currentLatitude;
     private Double currentLongitude;
 }

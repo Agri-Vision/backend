@@ -14,6 +14,7 @@ public class Plantation extends BaseEntity {
     private String address;
     private String contactNo;
     private String plantationImg;
+    private String plantationImgUrl;
     private Double currentLatitude;
     private Double currentLongitude;
 
