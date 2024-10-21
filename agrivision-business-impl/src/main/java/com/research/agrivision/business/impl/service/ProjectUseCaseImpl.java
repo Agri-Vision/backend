@@ -7,13 +7,30 @@ import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.enums.TaskType;
 import com.research.agrivision.business.port.in.ProjectUseCase;
 import com.research.agrivision.business.port.out.*;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.geometry.Envelope2D;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.geometry.DirectPosition;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.Base64;
 import java.util.List;
+
+import org.geotools.geometry.DirectPosition2D;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProjectUseCaseImpl implements ProjectUseCase {
@@ -145,51 +162,20 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         if (projectMaps.getRgbMap() != null) {
             Task rgbTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.RGB);
             if (rgbTask != null) {
-                String fileName = uploadTiffFile(projectMaps.getRgbMap());
-                rgbTask.setMapImage(fileName);
-                generateTaskSignedUrl(rgbTask);
-                //TODO set lat, lng and png image if needed
-                saveTaskPort.updateTask(rgbTask);
-            }
-        }
+                try {
+                    String tifFileName = uploadTiffFile(projectMaps.getRgbMap());
+                    rgbTask.setMapImage(tifFileName);
 
-        if (projectMaps.getRMap() != null) {
-            Task rTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.R);
-            if (rTask != null) {
-                String fileName = uploadTiffFile(projectMaps.getRMap());
-                rTask.setMapImage(fileName);
-                generateTaskSignedUrl(rTask);
-                saveTaskPort.updateTask(rTask);
-            }
-        }
+                    String pngFileName = convertTiffToPng(projectMaps.getRgbMap());
+                    rgbTask.setMapImagePng(pngFileName);
 
-        if (projectMaps.getGMap() != null) {
-            Task gTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.G);
-            if (gTask != null) {
-                String fileName = uploadTiffFile(projectMaps.getGMap());
-                gTask.setMapImage(fileName);
-                generateTaskSignedUrl(gTask);
-                saveTaskPort.updateTask(gTask);
-            }
-        }
+                    extractGeoCoordinates(projectMaps.getRgbMap(), rgbTask);
 
-        if (projectMaps.getReMap() != null) {
-            Task reTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.RE);
-            if (reTask != null) {
-                String fileName = uploadTiffFile(projectMaps.getReMap());
-                reTask.setMapImage(fileName);
-                generateTaskSignedUrl(reTask);
-                saveTaskPort.updateTask(reTask);
-            }
-        }
-
-        if (projectMaps.getNirMap() != null) {
-            Task nirTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.NIR);
-            if (nirTask != null) {
-                String fileName = uploadTiffFile(projectMaps.getNirMap());
-                nirTask.setMapImage(fileName);
-                generateTaskSignedUrl(nirTask);
-                saveTaskPort.updateTask(nirTask);
+                    generateTaskSignedUrl(rgbTask);
+                    saveTaskPort.updateTask(rgbTask);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -248,5 +234,71 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private String convertTiffToPng(MultipartFile tifFile) {
+        try {
+            BufferedImage tifImage = ImageIO.read(tifFile.getInputStream());
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(tifImage, "png", baos);
+
+            byte[] pngBytes = baos.toByteArray();
+
+            MultipartFile pngMultipartFile = new MockMultipartFile(
+                    "converted_image",
+                    "converted_image.png",
+                    "image/png",
+                    pngBytes
+            );
+
+            return uploadTiffFile(pngMultipartFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Error converting .tif to .png", e);
+        }
+    }
+
+    private void extractGeoCoordinates(MultipartFile tifFile, Task task) {
+        try {
+            File file = convertMultipartFileToFile(tifFile);
+
+            AbstractGridCoverage2DReader reader = new GeoTiffReader(file);
+            GridCoverage2D coverage = reader.read(null);
+
+            Envelope2D envelope = coverage.getEnvelope2D();
+
+            CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem2D();
+
+            CoordinateReferenceSystem targetCRS = DefaultGeographicCRS.WGS84; // geographic CRS (EPSG:4326)
+            MathTransform transform = CRS.findMathTransform(crs, targetCRS, true);
+
+            // create DirectPosition objects for lower and upper corners
+            DirectPosition lowerCorner = new DirectPosition2D(envelope.getMinimum(0), envelope.getMinimum(1));
+            DirectPosition upperCorner = new DirectPosition2D(envelope.getMaximum(0), envelope.getMaximum(1));
+
+            DirectPosition transformedLower = transform.transform(lowerCorner, null);
+            DirectPosition transformedUpper = transform.transform(upperCorner, null);
+
+            // extract the geographic bounds
+            double lowerLng = transformedLower.getOrdinate(0);
+            double lowerLat = transformedLower.getOrdinate(1);
+            double upperLng = transformedUpper.getOrdinate(0);
+            double upperLat = transformedUpper.getOrdinate(1);
+
+            task.setUpperLat(String.valueOf(upperLat));
+            task.setLowerLat(String.valueOf(lowerLat));
+            task.setUpperLng(String.valueOf(upperLng));
+            task.setLowerLng(String.valueOf(lowerLng));
+        } catch (IOException | TransformException e) {
+            throw new RuntimeException("Error reading GeoTIFF file", e);
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+        File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + multipartFile.getOriginalFilename());
+        multipartFile.transferTo(convFile);
+        return convFile;
     }
 }

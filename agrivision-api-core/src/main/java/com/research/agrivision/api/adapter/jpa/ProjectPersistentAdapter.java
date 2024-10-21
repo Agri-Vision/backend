@@ -264,7 +264,9 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
         if (optionalTask.isPresent()) {
             Task dbTask = optionalTask.get();
             dbTask.setMapImage(task.getMapImage());
+            dbTask.setMapImageUrl(task.getMapImageUrl());
             dbTask.setMapImagePng(task.getMapImagePng());
+            dbTask.setMapImagePngUrl(task.getMapImagePngUrl());
             dbTask.setLowerLat(task.getLowerLat());
             dbTask.setUpperLat(task.getUpperLat());
             dbTask.setLowerLng(task.getLowerLng());
