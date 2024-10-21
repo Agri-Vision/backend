@@ -15,4 +15,6 @@ public interface GetProjectPort {
     Project getProjectByWebOdmProjectId(String projectId);
 
     List<Project> getAllProjectsByStatus(ProjectStatus status);
+
+    List<Project> getAllProjectsByAgent(Long id);
 }

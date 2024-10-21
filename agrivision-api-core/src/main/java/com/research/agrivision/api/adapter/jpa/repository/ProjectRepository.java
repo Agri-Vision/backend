@@ -15,4 +15,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Optional<Project> findByWebOdmProjectId(String projectId);
 
     List<Project> findAllByStatus(ProjectStatus status);
+
+    List<Project> findAllByAgentId(Long id);
 }
