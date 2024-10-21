@@ -127,6 +127,14 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     }
 
     @Override
+    public List<Project> getAllProjectsByAgent(Long id) {
+        return projectRepository.findAllByAgentId(id).stream()
+                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Project::getLastModifiedDate).reversed())
+                .map(project -> mapper.map(project, com.research.agrivision.business.entity.Project.class))
+                .toList();
+    }
+
+    @Override
     public com.research.agrivision.business.entity.Task getTaskByWebOdmTaskId(String taskId) {
         Optional<com.research.agrivision.api.adapter.jpa.entity.Task> task = taskRepository.findByWebOdmTaskId(taskId);
         if (task.isPresent()) {

@@ -271,6 +271,29 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         }
     }
 
+    @Override
+    public List<Project> getAllProjectsByAgent(Long id) {
+        List<Project> projectList = getProjectPort.getAllProjectsByAgent(id);
+        for (Project project : projectList) {
+            if (project != null && project.getAgent() != null) {
+                generateAgentSignedUrl(project.getAgent());
+            }
+            if (project != null && project.getPlantation() != null) {
+                generatePlantationSignedUrl(project.getPlantation());
+            }
+
+            if (project == null || project.getTaskList() == null || project.getTaskList().isEmpty()) continue;
+            for (Task task : project.getTaskList()) {
+                generateTaskSignedUrl(task);
+                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
+                for (Tile tile : task.getTileList()) {
+                    generateTileSignedUrl(tile);
+                }
+            }
+        }
+        return projectList;
+    }
+
     private void generateTaskSignedUrl(Task task) {
         if(task.getMapImage() != null) {
             String imgName = task.getMapImage();

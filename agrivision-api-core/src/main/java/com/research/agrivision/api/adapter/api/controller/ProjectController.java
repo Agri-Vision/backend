@@ -1,13 +1,14 @@
 package com.research.agrivision.api.adapter.api.controller;
 
-import com.research.agrivision.api.adapter.api.request.ProjectMapRequest;
 import com.research.agrivision.api.adapter.api.response.CommonResponse;
 import com.research.agrivision.business.entity.Project;
 import com.research.agrivision.business.entity.Task;
 import com.research.agrivision.business.entity.Tile;
+import com.research.agrivision.business.entity.User;
 import com.research.agrivision.business.entity.project.ProjectMaps;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.port.in.ProjectUseCase;
+import com.research.agrivision.business.port.in.UserManagementUseCase;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,13 @@ import java.util.List;
 @RequestMapping("/project")
 public class ProjectController {
     private final ProjectUseCase projectService;
+    private final UserManagementUseCase userService;
+
     private final ModelMapper modelMapper = new ModelMapper();
 
-    public ProjectController(ProjectUseCase projectService) {
+    public ProjectController(ProjectUseCase projectService, UserManagementUseCase userService) {
         this.projectService = projectService;
+        this.userService = userService;
     }
 
     @PostMapping()
@@ -156,5 +160,20 @@ public class ProjectController {
 
         projectService.updateProjectMaps(id, projectMaps);
         return ResponseEntity.ok(new CommonResponse("Success"));
+    }
+
+    @GetMapping("/agent/{id}")
+    public ResponseEntity<List<Project>> getAllProjectsByAgent(@PathVariable Long id) {
+        User agent = userService.getUserById(id);
+
+        if (agent == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        List<Project> projectList = projectService.getAllProjectsByAgent(id);
+        if (projectList == null || projectList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(projectList);
     }
 }
