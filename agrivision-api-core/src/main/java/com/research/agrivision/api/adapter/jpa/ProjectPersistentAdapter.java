@@ -57,11 +57,10 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     @Override
     public Project updateProject(Project request) {
         if (request == null) return null;
-        com.research.agrivision.api.adapter.jpa.entity.Project project = projectRepository.findById(request.getId()).orElse(null);
         com.research.agrivision.api.adapter.jpa.entity.Project dbProject = mapper.map(request, com.research.agrivision.api.adapter.jpa.entity.Project.class);
         if (dbProject.getTaskList() != null) {
             for (Task task : dbProject.getTaskList()) {
-                task.setProject(project);
+                task.setProject(dbProject);
                 if (task.getTileList() == null) continue;
                 for (Tile tile : task.getTileList()) {
                     tile.setTask(task);
