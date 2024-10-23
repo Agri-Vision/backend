@@ -70,10 +70,6 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         if (project.getTaskList() != null && !project.getTaskList().isEmpty()) {
             for (Task task : project.getTaskList()) {
                 generateTaskSignedUrl(task);
-                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
             }
         }
         return saveProjectPort.createProject(project);
@@ -93,10 +89,6 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
 //            if (project.getWebOdmProjectId() != null && task.getWebOdmTaskId() != null && !task.isStatus()) {
 //                webOdmPort.getWebOdmTask(project.getWebOdmProjectId(), task.getWebOdmTaskId());
 //            }
-                if (task.getTileList() == null || task.getTileList().isEmpty()) continue;
-                for (Tile tile : task.getTileList()) {
-                    generateTileSignedUrl(tile);
-                }
             }
         }
         return saveProjectPort.updateProject(request);
@@ -183,6 +175,16 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         return getProjectPort.getAllProjectsByAgent(id);
     }
 
+    @Override
+    public void createTilesByTaskId(Long id, List<Tile> tileList) {
+        saveTilePort.createTilesByTaskId(id, tileList);
+    }
+
+    @Override
+    public List<Tile> getAllTilesByTaskId(Long id) {
+        return getTilePort.getAllTilesByTaskId(id);
+    }
+
     private void generateTaskSignedUrl(Task task) {
         if(task.getMapImage() != null) {
             String imgName = task.getMapImage();
@@ -194,12 +196,12 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         }
     }
 
-    private void generateTileSignedUrl(Tile tile) {
-        if(tile !=null && tile.getTileImage() != null) {
-            String imgName = tile.getTileImage();
-            tile.setTileImageUrl(filePort.generateSignedUrl(imgName));
-        }
-    }
+//    private void generateTileSignedUrl(Tile tile) {
+//        if(tile !=null && tile.getTileImage() != null) {
+//            String imgName = tile.getTileImage();
+//            tile.setTileImageUrl(filePort.generateSignedUrl(imgName));
+//        }
+//    }
 
     private void generatePlantationSignedUrl(Plantation plantation) {
         if(plantation !=null && plantation.getPlantationImg() != null) {

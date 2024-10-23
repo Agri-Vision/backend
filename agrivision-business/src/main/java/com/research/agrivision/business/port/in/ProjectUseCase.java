@@ -44,4 +44,8 @@ public interface ProjectUseCase {
     void updateProjectMaps(Long id, MultipartFile rgbMap);
 
     List<Project> getAllProjectsByAgent(Long id);
+
+    void createTilesByTaskId(Long id, List<Tile> tileList);
+
+    List<Tile> getAllTilesByTaskId(Long id);
 }

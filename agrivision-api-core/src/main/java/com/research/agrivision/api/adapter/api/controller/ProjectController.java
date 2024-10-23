@@ -180,4 +180,26 @@ public class ProjectController {
         }
         return ResponseEntity.ok(projectList);
     }
+
+    @PostMapping("/tile/by/task/{id}")
+    public ResponseEntity<CommonResponse> createTilesByTaskId(@PathVariable Long id, @RequestBody final List<Tile> tileList) {
+        if (tileList == null || tileList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Task task = projectService.getTaskById(id);
+        if (task == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResponse("Task not found"));
+
+        projectService.createTilesByTaskId(id, tileList);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CommonResponse("Created"));
+    }
+
+    @GetMapping("/tiles/by/task/{id}")
+    public ResponseEntity<List<Tile>> getAllTilesByTaskId(@PathVariable Long id) {
+        List<Tile> tileList = projectService.getAllTilesByTaskId(id);
+        if (tileList == null || tileList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(tileList);
+    }
 }
