@@ -7,12 +7,12 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
 public class Tile extends BaseEntity {
-    private String tileImage;
-    private String tileImageUrl;
     private String yield;
     private String stress;
     private String disease;
@@ -26,6 +26,9 @@ public class Tile extends BaseEntity {
     private Double soilMoisture;
     private Double pressure;
     private Double altitude;
+    private Integer row;
+    private Integer col;
+    private String rowCol;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "taskId")

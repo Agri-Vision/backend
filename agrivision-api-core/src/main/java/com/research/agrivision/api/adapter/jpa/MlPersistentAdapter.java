@@ -42,10 +42,10 @@ public class MlPersistentAdapter implements MlPort {
                 mapper.map(diseaseRequest, com.research.agrivision.api.adapter.integration.integrate.sample.request.DiseaseRequest.class);
         ModelResponse modelResponse = diseaseClient.getDiseaseModel(disRequest);
         String result = modelResponse.getPrediction().get(0).toString();
-        if (result.equalsIgnoreCase("1")) {
-            return "Brown Blight Detected";
+        if ("1".equalsIgnoreCase(result)) {
+            return "yes";
         } else {
-            return "Not Diseased";
+            return "no";
         }
     }
 
@@ -54,7 +54,12 @@ public class MlPersistentAdapter implements MlPort {
         com.research.agrivision.api.adapter.integration.integrate.sample.request.DiseaseRequest disRequest =
                 mapper.map(diseaseRequest, com.research.agrivision.api.adapter.integration.integrate.sample.request.DiseaseRequest.class);
         StressResponse stressResponse = stressClient.getStressModel(disRequest);
-        return stressResponse.getPrediction();
+        String prediction = stressResponse.getPrediction();
+        if ("Stressed".equalsIgnoreCase(prediction)) {
+            return "yes";
+        } else {
+            return "no";
+        }
 //        rendvi = 0.127
 //        temperature = 30.7571428571429
 //        humidity = 76.51428

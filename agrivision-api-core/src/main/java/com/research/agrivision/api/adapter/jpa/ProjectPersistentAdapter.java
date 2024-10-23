@@ -223,6 +223,22 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     }
 
     @Override
+    public void createTilesByTaskId(Long id, List<com.research.agrivision.business.entity.Tile> tileList) {
+        Task task = taskRepository.findById(id).orElse(null);
+        if (task != null) {
+            List<Tile> dbTileList = tileList.stream()
+                    .map(tile -> {
+                        Tile dbTile = mapper.map(tile, Tile.class);
+                        dbTile.setTask(task);
+                        return dbTile;
+                    })
+                    .toList();
+
+             tileRepository.saveAll(dbTileList);
+        }
+    }
+
+    @Override
     public com.research.agrivision.business.entity.Tile getTileById(Long tileId) {
         Optional<com.research.agrivision.api.adapter.jpa.entity.Tile> tile = tileRepository.findById(tileId);
         if (tile.isPresent()) {
@@ -234,6 +250,14 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     @Override
     public List<com.research.agrivision.business.entity.Tile> getAllTiles() {
         return tileRepository.findAll().stream()
+                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Tile::getLastModifiedDate).reversed())
+                .map(tile -> mapper.map(tile, com.research.agrivision.business.entity.Tile.class))
+                .toList();
+    }
+
+    @Override
+    public List<com.research.agrivision.business.entity.Tile> getAllTilesByTaskId(Long id) {
+        return tileRepository.findAllByTaskId(id).stream()
                 .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Tile::getLastModifiedDate).reversed())
                 .map(tile -> mapper.map(tile, com.research.agrivision.business.entity.Tile.class))
                 .toList();
