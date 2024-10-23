@@ -5,14 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Tile extends BaseEntity {
     private Long id;
-    private String tileImage;
-    private String tileImageUrl;
     private String yield;
     private String stress;
     private String disease;
@@ -26,4 +26,7 @@ public class Tile extends BaseEntity {
     private Double soilMoisture;
     private Double pressure;
     private Double altitude;
+    private Integer row;
+    private Integer col;
+    private String rowCol;
 }
