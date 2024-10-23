@@ -258,7 +258,7 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     @Override
     public List<com.research.agrivision.business.entity.Tile> getAllTilesByTaskId(Long id) {
         return tileRepository.findAllByTaskId(id).stream()
-                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Tile::getLastModifiedDate).reversed())
+                .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Tile::getLastModifiedDate))
                 .map(tile -> mapper.map(tile, com.research.agrivision.business.entity.Tile.class))
                 .toList();
     }
