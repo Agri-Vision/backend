@@ -234,7 +234,28 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
                     })
                     .toList();
 
-             tileRepository.saveAll(dbTileList);
+            tileRepository.saveAll(dbTileList);
+        }
+    }
+
+    @Override
+    public void createSchedulerTileListByTask(Long id, List<com.research.agrivision.business.entity.Tile> tileList) {
+        Task task = taskRepository.findById(id).orElse(null);
+        if (task != null) {
+            try {
+                List<Tile> dbTileList = tileList.stream()
+                        .map(tile -> {
+                            Tile dbTile = mapper.map(tile, Tile.class);
+                            dbTile.setTask(task);
+                            setPredictions(dbTile);
+                            return dbTile;
+                        })
+                        .toList();
+
+                tileRepository.saveAll(dbTileList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -305,5 +326,49 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
             dbTask.setUpperLng(task.getUpperLng());
             taskRepository.save(dbTask);
         }
+    }
+
+    private void setPredictions(Tile tile) {
+        DiseaseRequest stressRequest = new DiseaseRequest();
+        ArrayList<Double> stressFeatures = new ArrayList<>();
+        stressFeatures.add(tile.getRendvi());
+        stressFeatures.add(tile.getTemperature());
+        stressFeatures.add(tile.getHumidity());
+        stressFeatures.add(tile.getUvLevel());
+        stressFeatures.add(tile.getSoilMoisture());
+        stressFeatures.add(tile.getPressure());
+        stressFeatures.add(tile.getAltitude());
+
+        stressRequest.setFeatures(stressFeatures);
+        String stress = mlPort.getStressModel(stressRequest);
+        tile.setStress(stress);
+
+        DiseaseRequest diseaseRequest = new DiseaseRequest();
+        ArrayList<Double> diseaseFeatures = new ArrayList<>();
+        diseaseFeatures.add(tile.getNdvi());
+        diseaseFeatures.add(tile.getRendvi());
+        diseaseFeatures.add(tile.getCire());
+        diseaseFeatures.add(tile.getPri());
+        diseaseFeatures.add(tile.getTemperature());
+        diseaseFeatures.add(tile.getHumidity());
+        diseaseFeatures.add(tile.getUvLevel());
+
+        diseaseRequest.setFeatures(diseaseFeatures);
+        String disease = mlPort.getDiseaseModel(diseaseRequest);
+        tile.setDisease(disease);
+
+        DiseaseRequest yieldRequest = new DiseaseRequest();
+        ArrayList<Double> yieldFeatures = new ArrayList<>();
+        yieldFeatures.add(tile.getNdvi());
+        yieldFeatures.add(tile.getTemperature());
+        yieldFeatures.add(tile.getHumidity());
+        yieldFeatures.add(tile.getUvLevel());
+        yieldFeatures.add(tile.getSoilMoisture());
+        yieldFeatures.add(tile.getPressure());
+        yieldFeatures.add(tile.getAltitude());
+
+        yieldRequest.setFeatures(yieldFeatures);
+        String yield = mlPort.getYieldModel(yieldRequest);
+        tile.setYield(yield);
     }
 }

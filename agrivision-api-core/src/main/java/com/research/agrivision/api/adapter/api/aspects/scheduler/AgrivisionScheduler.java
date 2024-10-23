@@ -4,8 +4,7 @@ import com.research.agrivision.business.entity.Tile;
 import com.research.agrivision.business.entity.ToolProject;
 import com.research.agrivision.business.entity.imageTool.Response.TaskStatusResponse;
 import com.research.agrivision.business.enums.ToolTaskStatus;
-import com.research.agrivision.business.port.in.ProjectUseCase;
-import com.research.agrivision.business.port.in.ToolUseCase;
+import com.research.agrivision.business.port.out.SaveTilePort;
 import com.research.agrivision.business.port.out.ToolPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +29,10 @@ public class AgrivisionScheduler {
     List<Double> altitudes = List.of(550.00, 551.00, 551.42, 552.00, 553.00);
 
     @Autowired
-    private ProjectUseCase projectUseCase;
-
-    @Autowired
-    private ToolUseCase toolUseCase;
-
-    @Autowired
     private ToolPort toolPort;
+
+    @Autowired
+    private SaveTilePort saveTilePort;
 
     @Value("${scheduler.enabled}")
     private boolean isEnabled;
@@ -94,6 +90,8 @@ public class AgrivisionScheduler {
 
                     tiles.add(tile);
                 });
+
+                saveTilePort.createSchedulerTileListByTask(toolProject.getTask().getId(), tiles);
                 toolPort.updateToolProjectStatus(toolProject.getId(), ToolTaskStatus.SUCCESS);
 
             } catch (Exception e) {
