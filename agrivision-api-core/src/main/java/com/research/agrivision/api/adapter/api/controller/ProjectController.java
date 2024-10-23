@@ -1,33 +1,43 @@
 package com.research.agrivision.api.adapter.api.controller;
 
 import com.research.agrivision.api.adapter.api.response.CommonResponse;
-import com.research.agrivision.business.entity.Project;
-import com.research.agrivision.business.entity.Task;
-import com.research.agrivision.business.entity.Tile;
-import com.research.agrivision.business.entity.User;
-import com.research.agrivision.business.entity.project.ProjectMaps;
+import com.research.agrivision.business.entity.*;
+import com.research.agrivision.business.entity.imageTool.Request.CreateProjectRequest;
+import com.research.agrivision.business.entity.imageTool.Response.CreateProjectResponse;
+import com.research.agrivision.business.entity.imageTool.Response.StartProjectResponse;
 import com.research.agrivision.business.enums.ProjectStatus;
+import com.research.agrivision.business.enums.ToolTaskStatus;
 import com.research.agrivision.business.port.in.ProjectUseCase;
+import com.research.agrivision.business.port.in.ToolUseCase;
 import com.research.agrivision.business.port.in.UserManagementUseCase;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/project")
 public class ProjectController {
     private final ProjectUseCase projectService;
     private final UserManagementUseCase userService;
+    private final ToolUseCase toolService;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
-    public ProjectController(ProjectUseCase projectService, UserManagementUseCase userService) {
+    public ProjectController(ProjectUseCase projectService, UserManagementUseCase userService, ToolUseCase toolService) {
         this.projectService = projectService;
         this.userService = userService;
+        this.toolService = toolService;
     }
 
     @PostMapping()
@@ -160,9 +170,40 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        ProjectMaps projectMaps = new ProjectMaps(rgbMap, rMap, gMap, reMap, nirMap);
-
         projectService.updateProjectMaps(id, rgbMap);
+
+        try {
+            Task rgbTask = projectService.getRgbTaskByProjectId(id);
+
+            CreateProjectRequest projectRequest = new CreateProjectRequest(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+            CreateProjectResponse projectResponse = toolService.createProject(projectRequest);
+
+            //TODO create jpg image from rgb map
+            List<MultipartFile> files = new ArrayList<>();
+            MultipartFile jpgRgbFile = convertTiffToJpg(rgbMap);
+
+            files.add(jpgRgbFile);
+            files.add(rMap);
+            files.add(gMap);
+            files.add(reMap);
+            files.add(nirMap);
+
+            MultipartFile[] filesArray = files.toArray(new MultipartFile[0]);
+            toolService.projectFileUpload(projectResponse.getProject_id(), filesArray);
+
+            StartProjectResponse startProjectResponse = toolService.startProject(projectResponse.getProject_id());
+
+            ToolProject toolProject = new ToolProject();
+            toolProject.setToolProjectId(projectResponse.getProject_id());
+            toolProject.setToolTaskId(startProjectResponse.getTask_id());
+            toolProject.setTask(rgbTask);
+            toolProject.setStatus(ToolTaskStatus.PENDING);
+
+            toolService.createToolProject(toolProject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return ResponseEntity.ok(new CommonResponse("Success"));
     }
 
@@ -210,5 +251,25 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(tileList);
+    }
+
+    private MultipartFile convertTiffToJpg(MultipartFile tifFile) {
+        try {
+            BufferedImage tifImage = ImageIO.read(tifFile.getInputStream());
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(tifImage, "JPG", baos);
+
+            byte[] jpgBytes = baos.toByteArray();
+
+            return new MockMultipartFile(
+                    "converted_image_D",
+                    "converted_image_D.JPG",
+                    "image/jpeg",
+                    jpgBytes
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("Error converting .tif to .JPG", e);
+        }
     }
 }

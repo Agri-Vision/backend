@@ -28,6 +28,7 @@ client:
   disease: https://636a-34-125-197-242.ngrok-free.app
   stress: https://9aaf-34-16-181-30.ngrok-free.app
   yield: https://8ec9-34-91-168-199.ngrok-free.app
+  tool: http://127.0.0.1:5000
 
 web-odm:
   username: DinukaKariyawasam
@@ -36,3 +37,6 @@ web-odm:
 
 iot:
   url: http://iot.gsentry.cloud
+
+scheduler:
+  enabled: true

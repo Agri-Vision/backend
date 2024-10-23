@@ -67,4 +67,9 @@ public class SpringBootConfig {
     PlantationUseCase plantationUseCase() {
         return new PlantationUseCaseImpl();
     }
+
+    @Bean
+    ToolUseCase toolUseCase() {
+        return new ToolUseCaseImpl();
+    }
 }
