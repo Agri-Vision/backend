@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface TileRepository extends JpaRepository<Tile, Long> {
     List<Tile> findAllByTaskId(Long id);
+
+    List<Tile> findAllByTaskProjectId(Long id);
 }
