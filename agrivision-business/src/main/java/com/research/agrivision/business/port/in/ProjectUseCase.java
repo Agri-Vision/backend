@@ -43,4 +43,6 @@ public interface ProjectUseCase {
     void updateProjectMaps(Long id, ProjectMaps projectMaps);
 
     List<Project> getAllProjectsByAgent(Long id);
+
+    List<Tile> getAllTilesByTaskId(Long id);
 }

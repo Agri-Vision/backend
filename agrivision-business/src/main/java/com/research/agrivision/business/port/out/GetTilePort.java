@@ -10,4 +10,6 @@ public interface GetTilePort {
     Tile getTileById(Long tileId);
 
     List<Tile> getAllTiles();
+
+    List<Tile> getAllTilesByTaskId(Long id);
 }
