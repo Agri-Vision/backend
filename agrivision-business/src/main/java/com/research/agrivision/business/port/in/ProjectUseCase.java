@@ -48,4 +48,6 @@ public interface ProjectUseCase {
     void createTilesByTaskId(Long id, List<Tile> tileList);
 
     List<Tile> getAllTilesByTaskId(Long id);
+
+    List<Tile> getAllTilesByProjectId(Long id);
 }

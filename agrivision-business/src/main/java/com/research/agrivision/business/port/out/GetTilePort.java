@@ -12,4 +12,6 @@ public interface GetTilePort {
     List<Tile> getAllTiles();
 
     List<Tile> getAllTilesByTaskId(Long id);
+
+    List<Tile> getAllTilesByProjectId(Long id);
 }
