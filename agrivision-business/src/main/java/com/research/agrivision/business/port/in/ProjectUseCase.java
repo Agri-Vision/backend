@@ -45,4 +45,6 @@ public interface ProjectUseCase {
     List<Project> getAllProjectsByAgent(Long id);
 
     List<Tile> getAllTilesByTaskId(Long id);
+
+    List<Tile> getAllTilesByProjectId(Long id);
 }

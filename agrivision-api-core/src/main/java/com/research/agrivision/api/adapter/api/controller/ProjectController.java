@@ -185,4 +185,13 @@ public class ProjectController {
         }
         return ResponseEntity.ok(tileList);
     }
+
+    @GetMapping("/tiles/by/project/{id}")
+    public ResponseEntity<List<Tile>> getAllTilesByProjectId(@PathVariable Long id) {
+        List<Tile> tileList = projectService.getAllTilesByProjectId(id);
+        if (tileList == null || tileList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(tileList);
+    }
 }
