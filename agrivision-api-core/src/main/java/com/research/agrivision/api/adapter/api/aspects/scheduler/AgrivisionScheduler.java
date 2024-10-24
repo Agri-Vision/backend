@@ -21,12 +21,12 @@ import java.util.Random;
 @Configuration
 @EnableScheduling
 public class AgrivisionScheduler {
-    List<Double> temperatures = List.of(30.70, 30.72, 30.75, 30.78, 30.80);
-    List<Double> humidities = List.of(76.45, 76.50, 76.51, 76.55, 76.60);
-    List<Double> uvLevels = List.of(0.70, 0.72, 0.74, 0.76, 0.78);
-    List<Double> soilMoistures = List.of(271.45, 271.50, 271.52, 271.55, 271.60);
-    List<Double> pressures = List.of(95030.00, 95035.00, 95037.14, 95040.00, 95045.00);
-    List<Double> altitudes = List.of(550.00, 551.00, 551.42, 552.00, 553.00);
+    List<Double> temperatures = List.of(30.70, 25.72, 23.75, 32.78, 34.80);
+    List<Double> humidities = List.of(76.45, 74.50, 72.51, 80.55, 70.60);
+    List<Double> uvLevels = List.of(0.70, 0.62, 0.65, 0.74, 0.78);
+    List<Double> soilMoistures = List.of(260.45, 271.50, 251.52, 281.55, 268.60);
+    List<Double> pressures = List.of(93030.00, 90035.00, 95037.14, 97040.00, 98045.00);
+    List<Double> altitudes = List.of(450.00, 351.00, 551.42, 402.00, 653.00);
 
     @Autowired
     private ToolPort toolPort;

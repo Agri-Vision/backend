@@ -253,6 +253,13 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
                         .toList();
 
                 tileRepository.saveAll(dbTileList);
+                if (task.getProject() != null && task.getProject().getId() != null) {
+                    com.research.agrivision.api.adapter.jpa.entity.Project project = projectRepository.findById(task.getProject().getId()).orElse(null);
+                    if (project != null) {
+                        project.setStatus(ProjectStatus.COMPLETED);
+                        projectRepository.save(project);
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
