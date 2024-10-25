@@ -202,6 +202,7 @@ public class ProjectController {
             toolService.createToolProject(toolProject);
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.internalServerError().body(new CommonResponse(e.getMessage()));
         }
 
         return ResponseEntity.ok(new CommonResponse("Success"));

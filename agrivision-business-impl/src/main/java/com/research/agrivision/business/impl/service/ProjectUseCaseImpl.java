@@ -19,6 +19,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -150,6 +151,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     }
 
     @Override
+    @Async
     public void updateProjectMaps(Long id, MultipartFile rgbMap) {
         Task rgbTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.RGB);
         if (rgbTask != null) {
