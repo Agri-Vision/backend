@@ -1,6 +1,7 @@
 package com.research.agrivision.business.port.out;
 
 import com.research.agrivision.business.entity.Project;
+import com.research.agrivision.business.entity.project.ProjectHistory;
 import com.research.agrivision.business.enums.ProjectStatus;
 
 import java.util.List;
@@ -17,4 +18,8 @@ public interface GetProjectPort {
     List<Project> getAllProjectsByStatus(ProjectStatus status);
 
     List<Project> getAllProjectsByAgent(Long id);
+
+    List<ProjectHistory> getProjectHistoryByPlantationId(Long id);
+
+    long getProjectCountByPlantationId(Long id);
 }

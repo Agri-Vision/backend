@@ -4,7 +4,7 @@ import com.research.agrivision.business.entity.Project;
 import com.research.agrivision.business.entity.Task;
 import com.research.agrivision.business.entity.Tile;
 import com.research.agrivision.business.entity.imageTool.ToolReadings;
-import com.research.agrivision.business.entity.project.ProjectMaps;
+import com.research.agrivision.business.entity.project.ProjectHistory;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.hexa.core.UseCase;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,4 +50,8 @@ public interface ProjectUseCase {
     List<Tile> getAllTilesByTaskId(Long id);
 
     List<Tile> getAllTilesByProjectId(Long id);
+
+    List<ProjectHistory> getProjectHistoryByPlantationId(Long id);
+
+    long getProjectCountByPlantationId(Long id);
 }

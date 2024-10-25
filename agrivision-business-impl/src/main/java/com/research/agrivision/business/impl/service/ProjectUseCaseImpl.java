@@ -2,7 +2,7 @@ package com.research.agrivision.business.impl.service;
 
 import com.research.agrivision.business.entity.*;
 import com.research.agrivision.business.entity.imageTool.ToolReadings;
-import com.research.agrivision.business.entity.project.ProjectMaps;
+import com.research.agrivision.business.entity.project.ProjectHistory;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.enums.TaskType;
 import com.research.agrivision.business.port.in.ProjectUseCase;
@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProjectUseCaseImpl implements ProjectUseCase {
@@ -190,6 +189,16 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     @Override
     public List<Tile> getAllTilesByProjectId(Long id) {
         return getTilePort.getAllTilesByProjectId(id);
+    }
+
+    @Override
+    public List<ProjectHistory> getProjectHistoryByPlantationId(Long id) {
+        return getProjectPort.getProjectHistoryByPlantationId(id);
+    }
+
+    @Override
+    public long getProjectCountByPlantationId(Long id) {
+        return getProjectPort.getProjectCountByPlantationId(id);
     }
 
     private void generateTaskSignedUrl(Task task) {

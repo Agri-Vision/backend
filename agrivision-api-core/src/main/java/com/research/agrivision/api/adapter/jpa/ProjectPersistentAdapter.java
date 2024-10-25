@@ -3,8 +3,10 @@ package com.research.agrivision.api.adapter.jpa;
 import com.research.agrivision.api.adapter.jpa.entity.*;
 import com.research.agrivision.api.adapter.jpa.repository.*;
 import com.research.agrivision.business.entity.Project;
+import com.research.agrivision.business.entity.User;
 import com.research.agrivision.business.entity.imageTool.ToolReadings;
 import com.research.agrivision.business.entity.ml.sample.DiseaseRequest;
+import com.research.agrivision.business.entity.project.ProjectHistory;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.enums.TaskType;
 import com.research.agrivision.business.port.out.*;
@@ -12,10 +14,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, GetTilePort, SaveProjectPort, SaveTaskPort, SaveTilePort {
@@ -132,6 +137,69 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
                 .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Project::getLastModifiedDate).reversed())
                 .map(project -> mapper.map(project, com.research.agrivision.business.entity.Project.class))
                 .toList();
+    }
+
+    @Override
+    public List<ProjectHistory> getProjectHistoryByPlantationId(Long id) {
+        List<com.research.agrivision.api.adapter.jpa.entity.Project> projects = projectRepository.findAllByPlantationIdAndStatus(id, ProjectStatus.COMPLETED);
+
+        return projects.stream().map(project -> {
+            AvUser agent = null;
+            if (project.getAgent() != null && project.getAgent().getId() != null) {
+                agent = userRepository.findById(project.getAgent().getId()).orElse(null);
+            }
+
+            ProjectHistory projectHistory = new ProjectHistory();
+            projectHistory.setProjectCompletedDate(project.getLastModifiedDate());
+            projectHistory.setProjectCreatedDate(project.getCreatedDate());
+            projectHistory.setProjectId(project.getId());
+            projectHistory.setProjectName(project.getProjectName());
+            projectHistory.setAgent(mapper.map(agent, User.class));
+
+            Optional<Task> optionalTask = project.getTaskList().stream()
+                    .filter(task -> task.getTaskType() == TaskType.RGB)
+                    .findFirst();
+
+            if (optionalTask.isPresent()) {
+                Task task = optionalTask.get();
+
+                List<Tile> tiles = task.getTileList();
+                if (tiles == null || tiles.isEmpty()) {
+                    projectHistory.setTotalYield(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+                    projectHistory.setStressPct(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+                    projectHistory.setDiseasePct(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+                } else {
+                    BigDecimal totalYield = tiles.stream()
+                            .map(tile -> new BigDecimal(tile.getYield()))
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    projectHistory.setTotalYield(totalYield.setScale(2, RoundingMode.HALF_UP));
+
+                    long stressedTiles = tiles.stream()
+                            .filter(tile -> "yes".equalsIgnoreCase(tile.getStress()))
+                            .count();
+                    long totalTiles = tiles.size();
+                    BigDecimal stressPct = BigDecimal.valueOf(stressedTiles * 100.0 / totalTiles).setScale(2, RoundingMode.HALF_UP);
+                    projectHistory.setStressPct(stressPct.setScale(2, RoundingMode.HALF_UP));
+
+                    long diseasedTiles = tiles.stream()
+                            .filter(tile -> "yes".equalsIgnoreCase(tile.getDisease()))
+                            .count();
+                    BigDecimal diseasePct = BigDecimal.valueOf(diseasedTiles * 100.0 / totalTiles).setScale(2, RoundingMode.HALF_UP);
+                    projectHistory.setDiseasePct(diseasePct.setScale(2, RoundingMode.HALF_UP));
+                }
+            } else {
+                projectHistory.setTotalYield(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+                projectHistory.setStressPct(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+                projectHistory.setDiseasePct(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+            }
+
+            return projectHistory;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public long getProjectCountByPlantationId(Long id) {
+        return projectRepository.countByPlantationIdAndStatus(id, ProjectStatus.COMPLETED);
     }
 
     @Override

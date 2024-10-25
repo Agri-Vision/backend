@@ -5,11 +5,10 @@ import com.research.agrivision.business.entity.*;
 import com.research.agrivision.business.entity.imageTool.Request.CreateProjectRequest;
 import com.research.agrivision.business.entity.imageTool.Response.CreateProjectResponse;
 import com.research.agrivision.business.entity.imageTool.Response.StartProjectResponse;
+import com.research.agrivision.business.entity.project.ProjectHistory;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.enums.ToolTaskStatus;
-import com.research.agrivision.business.port.in.ProjectUseCase;
-import com.research.agrivision.business.port.in.ToolUseCase;
-import com.research.agrivision.business.port.in.UserManagementUseCase;
+import com.research.agrivision.business.port.in.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +30,15 @@ public class ProjectController {
     private final ProjectUseCase projectService;
     private final UserManagementUseCase userService;
     private final ToolUseCase toolService;
+    private final OrganizationUseCase organizationService;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
-    public ProjectController(ProjectUseCase projectService, UserManagementUseCase userService, ToolUseCase toolService) {
+    public ProjectController(ProjectUseCase projectService, UserManagementUseCase userService, ToolUseCase toolService, OrganizationUseCase organizationService) {
         this.projectService = projectService;
         this.userService = userService;
         this.toolService = toolService;
+        this.organizationService = organizationService;
     }
 
     @PostMapping()
@@ -252,6 +253,26 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(tileList);
+    }
+
+    @GetMapping("/history/by/plantation/{id}")
+    public ResponseEntity<List<ProjectHistory>> getProjectHistoryByPlantationId(@PathVariable Long id) {
+        Plantation plantation = organizationService.getPlantationById(id);
+
+        if (plantation == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        long count = projectService.getProjectCountByPlantationId(id);
+        if (count == 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        List<ProjectHistory> projectHistoryList = projectService.getProjectHistoryByPlantationId(id);
+        if (projectHistoryList == null || projectHistoryList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(projectHistoryList);
     }
 
     private MultipartFile convertTiffToJpg(MultipartFile tifFile) {
