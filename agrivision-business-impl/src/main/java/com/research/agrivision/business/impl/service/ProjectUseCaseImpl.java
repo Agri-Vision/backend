@@ -206,6 +206,16 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         return getTilePort.getTotalYield();
     }
 
+    @Override
+    public String getTotalStressPct() {
+        return getTilePort.getTotalStressPct();
+    }
+
+    @Override
+    public String getTotalDiseasePct() {
+        return getTilePort.getTotalDiseasePct();
+    }
+
     private void generateTaskSignedUrl(Task task) {
         if(task.getMapImage() != null) {
             String imgName = task.getMapImage();

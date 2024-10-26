@@ -56,4 +56,8 @@ public interface ProjectUseCase {
     long getProjectCountByPlantationId(Long id);
 
     String getTotalYield();
+
+    String getTotalStressPct();
+
+    String getTotalDiseasePct();
 }

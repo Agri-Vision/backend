@@ -383,6 +383,43 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     }
 
     @Override
+    public String getTotalStressPct() {
+        List<Tile> tiles = tileRepository.findAll();
+        if (tiles.isEmpty()) {
+            return "0.00%";
+        } else {
+            long stressedTiles = tiles.stream()
+                    .filter(tile -> "yes".equalsIgnoreCase(tile.getStress()))
+                    .count();
+            long totalTiles = tiles.size();
+
+            BigDecimal stressPct = BigDecimal.valueOf(stressedTiles * 100.0 / totalTiles).setScale(2, RoundingMode.DOWN);
+            stressPct = stressPct.setScale(2, RoundingMode.DOWN);
+
+            return stressPct + "%";
+        }
+    }
+
+    @Override
+    public String getTotalDiseasePct() {
+        List<Tile> tiles = tileRepository.findAll();
+        if (tiles.isEmpty()) {
+            return "0.00%";
+        } else {
+
+            long diseasedTiles = tiles.stream()
+                    .filter(tile -> "yes".equalsIgnoreCase(tile.getDisease()))
+                    .count();
+            long totalTiles = tiles.size();
+
+            BigDecimal diseasePct = BigDecimal.valueOf(diseasedTiles * 100.0 / totalTiles).setScale(2, RoundingMode.DOWN);
+            diseasePct = diseasePct.setScale(2, RoundingMode.DOWN);
+
+            return diseasePct + "%";
+        }
+    }
+
+    @Override
     public com.research.agrivision.business.entity.Task getRgbTaskByProjectId(Long id) {
         return taskRepository.findAllByProjectIdAndTaskType(id, TaskType.RGB).stream()
                 .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Task::getLastModifiedDate).reversed())

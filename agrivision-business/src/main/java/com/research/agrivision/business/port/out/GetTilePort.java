@@ -16,4 +16,8 @@ public interface GetTilePort {
     List<Tile> getAllTilesByProjectId(Long id);
 
     String getTotalYield();
+
+    String getTotalStressPct();
+
+    String getTotalDiseasePct();
 }
