@@ -24,9 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.List;
 
 import org.geotools.geometry.DirectPosition2D;
@@ -283,8 +286,17 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     }
 
     private String convertTiffToPng(MultipartFile tifFile) {
-        try {
-            BufferedImage tifImage = ImageIO.read(tifFile.getInputStream());
+        try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(tifFile.getInputStream())) {
+            Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tif");
+
+            if (!readers.hasNext()) {
+                throw new IOException("No TIFF reader found for .tif files");
+            }
+
+            ImageReader reader = readers.next();
+            reader.setInput(imageInputStream);
+
+            BufferedImage tifImage = reader.read(0);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(tifImage, "png", baos);

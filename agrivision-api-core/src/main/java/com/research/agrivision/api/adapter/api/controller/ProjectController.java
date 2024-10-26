@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -309,8 +312,17 @@ public class ProjectController {
     }
 
     private MultipartFile convertTiffToJpg(MultipartFile tifFile) {
-        try {
-            BufferedImage tifImage = ImageIO.read(tifFile.getInputStream());
+        try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(tifFile.getInputStream())) {
+            Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tif");
+
+            if (!readers.hasNext()) {
+                throw new IOException("No TIFF reader found for .tif files");
+            }
+
+            ImageReader reader = readers.next();
+            reader.setInput(imageInputStream);
+
+            BufferedImage tifImage = reader.read(0);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(tifImage, "JPG", baos);
