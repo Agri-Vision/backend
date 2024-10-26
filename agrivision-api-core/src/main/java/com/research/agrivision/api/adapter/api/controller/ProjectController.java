@@ -275,6 +275,39 @@ public class ProjectController {
         return ResponseEntity.ok(projectHistoryList);
     }
 
+    @GetMapping("/total/yield/{id}")
+    public ResponseEntity<CommonResponse> getTotalYieldByProjectId(@PathVariable Long id) {
+        Project project = projectService.getProjectById(id);
+        if (project == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        String totalYield = projectService.getTotalYieldByProjectId(id);
+        return ResponseEntity.ok(new CommonResponse(totalYield));
+    }
+
+    @GetMapping("/total/stress-pct/{id}")
+    public ResponseEntity<CommonResponse> getTotalStressPctByProjectId(@PathVariable Long id) {
+        Project project = projectService.getProjectById(id);
+        if (project == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        String totalStressPct = projectService.getTotalStressPctByProjectId(id);
+        return ResponseEntity.ok(new CommonResponse(totalStressPct));
+    }
+
+    @GetMapping("/total/disease-pct/{id}")
+    public ResponseEntity<CommonResponse> getTotalDiseasePctByProjectId(@PathVariable Long id) {
+        Project project = projectService.getProjectById(id);
+        if (project == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        String totalDiseasePct = projectService.getTotalDiseasePctByProjectId(id);
+        return ResponseEntity.ok(new CommonResponse(totalDiseasePct));
+    }
+
     private MultipartFile convertTiffToJpg(MultipartFile tifFile) {
         try {
             BufferedImage tifImage = ImageIO.read(tifFile.getInputStream());

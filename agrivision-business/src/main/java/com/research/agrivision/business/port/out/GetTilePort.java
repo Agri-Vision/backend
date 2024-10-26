@@ -20,4 +20,10 @@ public interface GetTilePort {
     String getTotalStressPct();
 
     String getTotalDiseasePct();
+
+    String getTotalYieldByProjectId(Long id);
+
+    String getTotalStressPctByProjectId(Long id);
+
+    String getTotalDiseasePctByProjectId(Long id);
 }
