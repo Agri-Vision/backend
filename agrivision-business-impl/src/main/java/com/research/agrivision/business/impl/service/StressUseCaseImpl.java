@@ -7,7 +7,7 @@ public class StressUseCaseImpl implements StressUseCase {
     @Override
     public String getStressByTileId(Tile tile) {
         if (tile.getStress() == null) tile.setStress("");
-        if (!"Stressed".equals(tile.getStress())) {
+        if (!"yes".equals(tile.getStress())) {
             return "No Stress Detected";
         }
 
