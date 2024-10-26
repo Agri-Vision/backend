@@ -54,4 +54,6 @@ public interface ProjectUseCase {
     List<ProjectHistory> getProjectHistoryByPlantationId(Long id);
 
     long getProjectCountByPlantationId(Long id);
+
+    String getTotalYield();
 }

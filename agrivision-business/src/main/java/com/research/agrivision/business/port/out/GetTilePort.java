@@ -14,4 +14,6 @@ public interface GetTilePort {
     List<Tile> getAllTilesByTaskId(Long id);
 
     List<Tile> getAllTilesByProjectId(Long id);
+
+    String getTotalYield();
 }

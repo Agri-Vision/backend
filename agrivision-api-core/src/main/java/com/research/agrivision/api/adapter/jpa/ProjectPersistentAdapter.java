@@ -165,32 +165,32 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
 
                 List<Tile> tiles = task.getTileList();
                 if (tiles == null || tiles.isEmpty()) {
-                    projectHistory.setTotalYield(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
-                    projectHistory.setStressPct(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
-                    projectHistory.setDiseasePct(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+                    projectHistory.setTotalYield(BigDecimal.ZERO.setScale(2, RoundingMode.DOWN));
+                    projectHistory.setStressPct(BigDecimal.ZERO.setScale(2, RoundingMode.DOWN));
+                    projectHistory.setDiseasePct(BigDecimal.ZERO.setScale(2, RoundingMode.DOWN));
                 } else {
                     BigDecimal totalYield = tiles.stream()
                             .map(tile -> new BigDecimal(tile.getYield()))
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    projectHistory.setTotalYield(totalYield.setScale(2, RoundingMode.HALF_UP));
+                    projectHistory.setTotalYield(totalYield.setScale(2, RoundingMode.DOWN));
 
                     long stressedTiles = tiles.stream()
                             .filter(tile -> "yes".equalsIgnoreCase(tile.getStress()))
                             .count();
                     long totalTiles = tiles.size();
-                    BigDecimal stressPct = BigDecimal.valueOf(stressedTiles * 100.0 / totalTiles).setScale(2, RoundingMode.HALF_UP);
-                    projectHistory.setStressPct(stressPct.setScale(2, RoundingMode.HALF_UP));
+                    BigDecimal stressPct = BigDecimal.valueOf(stressedTiles * 100.0 / totalTiles).setScale(2, RoundingMode.DOWN);
+                    projectHistory.setStressPct(stressPct.setScale(2, RoundingMode.DOWN));
 
                     long diseasedTiles = tiles.stream()
                             .filter(tile -> "yes".equalsIgnoreCase(tile.getDisease()))
                             .count();
-                    BigDecimal diseasePct = BigDecimal.valueOf(diseasedTiles * 100.0 / totalTiles).setScale(2, RoundingMode.HALF_UP);
-                    projectHistory.setDiseasePct(diseasePct.setScale(2, RoundingMode.HALF_UP));
+                    BigDecimal diseasePct = BigDecimal.valueOf(diseasedTiles * 100.0 / totalTiles).setScale(2, RoundingMode.DOWN);
+                    projectHistory.setDiseasePct(diseasePct.setScale(2, RoundingMode.DOWN));
                 }
             } else {
-                projectHistory.setTotalYield(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
-                projectHistory.setStressPct(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
-                projectHistory.setDiseasePct(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+                projectHistory.setTotalYield(BigDecimal.ZERO.setScale(2, RoundingMode.DOWN));
+                projectHistory.setStressPct(BigDecimal.ZERO.setScale(2, RoundingMode.DOWN));
+                projectHistory.setDiseasePct(BigDecimal.ZERO.setScale(2, RoundingMode.DOWN));
             }
 
             return projectHistory;
@@ -365,6 +365,21 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
                 .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.Tile::getLastModifiedDate))
                 .map(tile -> mapper.map(tile, com.research.agrivision.business.entity.Tile.class))
                 .toList();
+    }
+
+    @Override
+    public String getTotalYield() {
+        List<Tile> tiles = tileRepository.findAll();
+        if (tiles.isEmpty()) {
+            return "0.00 Kg";
+        } else {
+            BigDecimal totalYield = tiles.stream()
+                    .map(tile -> new BigDecimal(tile.getYield()))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            totalYield = totalYield.setScale(2, RoundingMode.DOWN);
+            return totalYield + " Kg";
+        }
     }
 
     @Override

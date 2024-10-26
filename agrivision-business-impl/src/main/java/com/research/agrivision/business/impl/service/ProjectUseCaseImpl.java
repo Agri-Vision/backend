@@ -201,6 +201,11 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         return getProjectPort.getProjectCountByPlantationId(id);
     }
 
+    @Override
+    public String getTotalYield() {
+        return getTilePort.getTotalYield();
+    }
+
     private void generateTaskSignedUrl(Task task) {
         if(task.getMapImage() != null) {
             String imgName = task.getMapImage();
