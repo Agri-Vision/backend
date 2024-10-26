@@ -16,7 +16,7 @@ public class ToolProject extends BaseEntity {
     private String toolTaskId;
     private ToolTaskStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "taskId")
     private Task task;
 }

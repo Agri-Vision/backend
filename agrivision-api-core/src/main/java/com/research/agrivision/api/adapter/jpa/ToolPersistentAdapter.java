@@ -1,13 +1,11 @@
 package com.research.agrivision.api.adapter.jpa;
 
 import com.research.agrivision.api.adapter.clients.ImageToolClient;
-import com.research.agrivision.api.adapter.jpa.entity.AvUser;
-import com.research.agrivision.api.adapter.jpa.entity.Plantation;
 import com.research.agrivision.api.adapter.jpa.repository.ToolProjectRepository;
+import com.research.agrivision.business.entity.Task;
 import com.research.agrivision.business.entity.ToolProject;
 import com.research.agrivision.business.entity.imageTool.Request.CreateProjectRequest;
 import com.research.agrivision.business.entity.imageTool.Response.CreateProjectResponse;
-import com.research.agrivision.business.entity.imageTool.Response.FileUploadResponse;
 import com.research.agrivision.business.entity.imageTool.Response.StartProjectResponse;
 import com.research.agrivision.business.entity.imageTool.Response.TaskStatusResponse;
 import com.research.agrivision.business.enums.ToolTaskStatus;
@@ -39,8 +37,8 @@ public class ToolPersistentAdapter implements ToolPort {
     }
 
     @Override
-    public FileUploadResponse projectFileUpload(int id, MultipartFile[] files) {
-        return toolClient.projectFileUpload(id, files);
+    public void projectFileUpload(int id, MultipartFile[] files) {
+        toolClient.projectFileUpload(id, files);
     }
 
     @Override
@@ -62,7 +60,8 @@ public class ToolPersistentAdapter implements ToolPort {
 
     @Override
     public List<ToolProject> getAllToolProjectsByStatus(ToolTaskStatus status) {
-        return toolProjectRepository.findAllByStatus(status).stream()
+        List<com.research.agrivision.api.adapter.jpa.entity.ToolProject> toolProjectList = toolProjectRepository.findAllByStatus(status);
+        return toolProjectList.stream()
                 .sorted(Comparator.comparing(com.research.agrivision.api.adapter.jpa.entity.ToolProject::getId))
                 .map(toolProject -> mapper.map(toolProject, com.research.agrivision.business.entity.ToolProject.class))
                 .toList();

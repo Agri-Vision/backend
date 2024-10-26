@@ -2,7 +2,6 @@ package com.research.agrivision.api.adapter.clients;
 
 import com.research.agrivision.business.entity.imageTool.Request.CreateProjectRequest;
 import com.research.agrivision.business.entity.imageTool.Response.CreateProjectResponse;
-import com.research.agrivision.business.entity.imageTool.Response.FileUploadResponse;
 import com.research.agrivision.business.entity.imageTool.Response.StartProjectResponse;
 import com.research.agrivision.business.entity.imageTool.Response.TaskStatusResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -15,7 +14,7 @@ public interface ImageToolClient {
     CreateProjectResponse createProject(@RequestBody CreateProjectRequest request);
 
     @PostMapping(value = "/projects/{id}/upload", consumes = "multipart/form-data")
-    FileUploadResponse projectFileUpload(@PathVariable int id, @RequestPart("files[]") MultipartFile[] files);
+    void projectFileUpload(@PathVariable int id, @RequestPart("files[]") MultipartFile[] files);
 
     @PostMapping("/project/{id}/start")
     StartProjectResponse startProject(@PathVariable int id);

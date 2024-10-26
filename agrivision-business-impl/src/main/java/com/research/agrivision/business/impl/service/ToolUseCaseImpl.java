@@ -3,7 +3,6 @@ package com.research.agrivision.business.impl.service;
 import com.research.agrivision.business.entity.ToolProject;
 import com.research.agrivision.business.entity.imageTool.Request.CreateProjectRequest;
 import com.research.agrivision.business.entity.imageTool.Response.CreateProjectResponse;
-import com.research.agrivision.business.entity.imageTool.Response.FileUploadResponse;
 import com.research.agrivision.business.entity.imageTool.Response.StartProjectResponse;
 import com.research.agrivision.business.entity.imageTool.Response.TaskStatusResponse;
 import com.research.agrivision.business.enums.ToolTaskStatus;
@@ -27,8 +26,8 @@ public class ToolUseCaseImpl implements ToolUseCase {
     }
 
     @Override
-    public FileUploadResponse projectFileUpload(int id, MultipartFile[] files) {
-        return toolPort.projectFileUpload(id, files);
+    public void projectFileUpload(int id, MultipartFile[] files) {
+        toolPort.projectFileUpload(id, files);
     }
 
     @Override
