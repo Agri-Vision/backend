@@ -14,8 +14,8 @@ public interface ImageToolClient {
     @PostMapping("/project/new")
     CreateProjectResponse createProject(@RequestBody CreateProjectRequest request);
 
-    @PostMapping("/projects/{id}/upload")
-    FileUploadResponse projectFileUpload(@PathVariable int id, @RequestParam("files") MultipartFile[] files);
+    @PostMapping(value = "/projects/{id}/upload", consumes = "multipart/form-data")
+    FileUploadResponse projectFileUpload(@PathVariable int id, @RequestPart("files[]") MultipartFile[] files);
 
     @PostMapping("/project/{id}/start")
     StartProjectResponse startProject(@PathVariable int id);
