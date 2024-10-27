@@ -311,7 +311,7 @@ public class ProjectController {
         return ResponseEntity.ok(new CommonResponse(totalDiseasePct));
     }
 
-    private MultipartFile convertTiffToJpg(MultipartFile tifFile) {
+    public MultipartFile convertTiffToJpg(MultipartFile tifFile) {
         try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(tifFile.getInputStream())) {
             Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tif");
 
@@ -324,10 +324,24 @@ public class ProjectController {
 
             BufferedImage tifImage = reader.read(0);
 
+            BufferedImage rgbImage = new BufferedImage(
+                    tifImage.getWidth(),
+                    tifImage.getHeight(),
+                    BufferedImage.TYPE_INT_RGB
+            );
+            rgbImage.createGraphics().drawImage(tifImage, 0, 0, null);
+
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(tifImage, "JPG", baos);
+
+            if (!ImageIO.write(rgbImage, "jpg", baos)) {
+                throw new IOException("JPG writer not available or failed");
+            }
 
             byte[] jpgBytes = baos.toByteArray();
+
+            if (jpgBytes.length == 0) {
+                throw new IOException("Conversion to JPG failed, output is empty");
+            }
 
             return new MockMultipartFile(
                     "converted_image_D",
