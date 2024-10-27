@@ -36,12 +36,12 @@ public class StressUseCaseImpl implements StressUseCase {
         StringBuilder suggestion = new StringBuilder();
 
         if (soilMoisture < 300.0) {
-            double requiredIncrease = 300.0 - soilMoisture;
+            long requiredIncrease = Math.round(300.0f - soilMoisture);
             suggestion.append("Increase soil moisture by ").append(requiredIncrease).append("% through additional irrigation. ");
         }
 
         if (uvIndex > 1.0) {
-            double requiredReduction = uvIndex - 1.0;
+            long requiredReduction = Math.round(uvIndex - 1.0);
             suggestion.append("Reduce UV exposure by using shade cloth or protective coverings with approximately ")
                     .append((requiredReduction / uvIndex) * 100).append("% shading.");
         }
