@@ -29,19 +29,19 @@ public class StressUseCaseImpl implements StressUseCase {
     }
 
     private boolean isWaterStressDetected(double soilMoisture, double temperature, double humidity) {
-        return soilMoisture < 300.0 && temperature > 30.0 && humidity < 40.0;
+        return soilMoisture < 300.0 && temperature > 30.0 && humidity < 59.60;
     }
 
     private String generateSuggestions(double soilMoisture, double uvIndex) {
         StringBuilder suggestion = new StringBuilder();
 
-        if (soilMoisture < 30.0) {
-            double requiredIncrease = 30.0 - soilMoisture;
+        if (soilMoisture < 300.0) {
+            double requiredIncrease = 300.0 - soilMoisture;
             suggestion.append("Increase soil moisture by ").append(requiredIncrease).append("% through additional irrigation. ");
         }
 
-        if (uvIndex > 5.0) {
-            double requiredReduction = uvIndex - 5.0;
+        if (uvIndex > 1.0) {
+            double requiredReduction = uvIndex - 1.0;
             suggestion.append("Reduce UV exposure by using shade cloth or protective coverings with approximately ")
                     .append((requiredReduction / uvIndex) * 100).append("% shading.");
         }
