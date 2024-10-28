@@ -90,6 +90,11 @@ public class ProjectPersistentAdapter implements GetProjectPort, GetTaskPort, Ge
     }
 
     @Override
+    public void deleteProjectById(Long id) {
+        projectRepository.deleteById(id);
+    }
+
+    @Override
     public Project getProjectById(Long id) {
         Optional<com.research.agrivision.api.adapter.jpa.entity.Project> project = projectRepository.findById(id);
         if (project.isPresent()) {

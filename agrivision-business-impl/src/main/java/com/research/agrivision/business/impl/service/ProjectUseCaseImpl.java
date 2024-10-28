@@ -234,6 +234,11 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
         return getTilePort.getTotalDiseasePctByProjectId(id);
     }
 
+    @Override
+    public void deleteProjectById(Long id) {
+        saveProjectPort.deleteProjectById(id);
+    }
+
     private void generateTaskSignedUrl(Task task) {
         if(task.getMapImage() != null) {
             String imgName = task.getMapImage();

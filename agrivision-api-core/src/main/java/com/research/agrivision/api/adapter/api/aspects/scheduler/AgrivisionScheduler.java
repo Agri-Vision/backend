@@ -1,9 +1,11 @@
 package com.research.agrivision.api.adapter.api.aspects.scheduler;
 
+import com.research.agrivision.business.entity.IotReading;
 import com.research.agrivision.business.entity.Tile;
 import com.research.agrivision.business.entity.ToolProject;
 import com.research.agrivision.business.entity.imageTool.Response.TaskStatusResponse;
 import com.research.agrivision.business.enums.ToolTaskStatus;
+import com.research.agrivision.business.port.out.GetIotPort;
 import com.research.agrivision.business.port.out.SaveTilePort;
 import com.research.agrivision.business.port.out.ToolPort;
 import org.slf4j.Logger;
@@ -34,12 +36,17 @@ public class AgrivisionScheduler {
     @Autowired
     private SaveTilePort saveTilePort;
 
+    @Autowired
+    private GetIotPort getIotPort;
+
     @Value("${scheduler.enabled}")
     private boolean isEnabled;
 
     private static final Logger logger = LoggerFactory.getLogger(AgrivisionScheduler.class);
 
     private final Random random = new Random();
+
+    IotReading iotReading = getIotPort.getLatestReading();
 
     @Scheduled(fixedDelay = 60000)
     public void processToolProjects() {
@@ -81,12 +88,19 @@ public class AgrivisionScheduler {
 
                     tile.setRowCol(patch.getRow() + "_" + patch.getColumn());
 
-                    tile.setTemperature(getRandomValue(temperatures));
-                    tile.setHumidity(getRandomValue(humidities));
-                    tile.setUvLevel(getRandomValue(uvLevels));
-                    tile.setSoilMoisture(getRandomValue(soilMoistures));
-                    tile.setPressure(getRandomValue(pressures));
-                    tile.setAltitude(getRandomValue(altitudes));
+//                    tile.setTemperature(getRandomValue(temperatures));
+//                    tile.setHumidity(getRandomValue(humidities));
+//                    tile.setUvLevel(getRandomValue(uvLevels));
+//                    tile.setSoilMoisture(getRandomValue(soilMoistures));
+//                    tile.setPressure(getRandomValue(pressures));
+//                    tile.setAltitude(getRandomValue(altitudes));
+
+                    tile.setTemperature(Double.valueOf(iotReading.getTemperature()));
+                    tile.setHumidity(Double.valueOf(iotReading.getHumidity()));
+                    tile.setUvLevel(Double.valueOf(iotReading.getUvLevel()));
+                    tile.setSoilMoisture(Double.valueOf(iotReading.getSoilMoisture()));
+                    tile.setPressure(Double.valueOf(iotReading.getPressure()));
+                    tile.setAltitude(Double.valueOf(iotReading.getAltitude()));
 
                     tiles.add(tile);
                 });

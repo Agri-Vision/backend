@@ -325,6 +325,13 @@ public class ProjectController {
         return ResponseEntity.ok(new CommonResponse(totalDiseasePct));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<CommonResponse> deleteByProjectId(@PathVariable Long id) {
+        projectService.deleteProjectById(id);
+
+        return ResponseEntity.ok(new CommonResponse("Success"));
+    }
+
     public MultipartFile convertTiffToJpg(MultipartFile tifFile) {
         try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(tifFile.getInputStream())) {
             Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tif");

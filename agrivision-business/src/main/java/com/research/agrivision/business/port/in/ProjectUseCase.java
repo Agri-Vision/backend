@@ -66,4 +66,6 @@ public interface ProjectUseCase {
     String getTotalStressPctByProjectId(Long id);
 
     String getTotalDiseasePctByProjectId(Long id);
+
+    void deleteProjectById(Long id);
 }
