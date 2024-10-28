@@ -168,6 +168,13 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResponse("Please upload rgb map"));
         }
 
+        byte[] rgbMapBytes;
+        try {
+            rgbMapBytes = rgbMap.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         Project project = projectService.getProjectById(id);
 
         if (project == null) {
@@ -183,8 +190,15 @@ public class ProjectController {
             CreateProjectResponse projectResponse = toolService.createProject(projectRequest);
 
             //TODO create jpg image from rgb map
+            MultipartFile rgbMapCopyForConversion = new MockMultipartFile(
+                    "rgbMap",
+                    rgbMap.getOriginalFilename(),
+                    rgbMap.getContentType(),
+                    rgbMapBytes
+            );
+
             List<MultipartFile> files = new ArrayList<>();
-            MultipartFile jpgRgbFile = convertTiffToJpg(rgbMap);
+            MultipartFile jpgRgbFile = convertTiffToJpg(rgbMapCopyForConversion);
 
             files.add(jpgRgbFile);
             files.add(rMap);
