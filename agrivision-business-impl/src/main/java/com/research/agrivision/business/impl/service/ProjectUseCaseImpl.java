@@ -153,7 +153,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     }
 
     @Override
-    @Async
+//    @Async
     public void updateProjectMaps(Long id, MultipartFile rgbMap) {
         Task rgbTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.RGB);
         if (rgbTask != null) {
