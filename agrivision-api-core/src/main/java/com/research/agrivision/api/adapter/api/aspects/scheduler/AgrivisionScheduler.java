@@ -46,11 +46,10 @@ public class AgrivisionScheduler {
 
     private final Random random = new Random();
 
-    IotReading iotReading = getIotPort.getLatestReading();
-
     @Scheduled(fixedDelay = 60000)
     public void processToolProjects() {
         List<ToolProject> toolProjectList = toolPort.getAllToolProjectsByStatus(ToolTaskStatus.PENDING);
+        IotReading iotReading = getIotPort.getLatestReading();
 
         for (ToolProject toolProject : toolProjectList) {
             try {
