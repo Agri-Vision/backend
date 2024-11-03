@@ -1,33 +1,47 @@
 package com.research.agrivision.api.adapter.api.controller;
 
 import com.research.agrivision.api.adapter.api.response.CommonResponse;
-import com.research.agrivision.business.entity.Project;
-import com.research.agrivision.business.entity.Task;
-import com.research.agrivision.business.entity.Tile;
-import com.research.agrivision.business.entity.User;
-import com.research.agrivision.business.entity.project.ProjectMaps;
+import com.research.agrivision.business.entity.*;
+import com.research.agrivision.business.entity.imageTool.Request.CreateProjectRequest;
+import com.research.agrivision.business.entity.imageTool.Response.CreateProjectResponse;
+import com.research.agrivision.business.entity.imageTool.Response.StartProjectResponse;
+import com.research.agrivision.business.entity.project.ProjectHistory;
 import com.research.agrivision.business.enums.ProjectStatus;
-import com.research.agrivision.business.port.in.ProjectUseCase;
-import com.research.agrivision.business.port.in.UserManagementUseCase;
+import com.research.agrivision.business.enums.ToolTaskStatus;
+import com.research.agrivision.business.port.in.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/project")
 public class ProjectController {
     private final ProjectUseCase projectService;
     private final UserManagementUseCase userService;
+    private final ToolUseCase toolService;
+    private final OrganizationUseCase organizationService;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
-    public ProjectController(ProjectUseCase projectService, UserManagementUseCase userService) {
+    public ProjectController(ProjectUseCase projectService, UserManagementUseCase userService, ToolUseCase toolService, OrganizationUseCase organizationService) {
         this.projectService = projectService;
         this.userService = userService;
+        this.toolService = toolService;
+        this.organizationService = organizationService;
     }
 
     @PostMapping()
@@ -154,15 +168,61 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CommonResponse("Please upload rgb map"));
         }
 
+        byte[] rgbMapBytes;
+        try {
+            rgbMapBytes = rgbMap.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         Project project = projectService.getProjectById(id);
 
         if (project == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        ProjectMaps projectMaps = new ProjectMaps(rgbMap, rMap, gMap, reMap, nirMap);
-
         projectService.updateProjectMaps(id, rgbMap);
+
+        try {
+            Task rgbTask = projectService.getRgbTaskByProjectId(id);
+
+            CreateProjectRequest projectRequest = new CreateProjectRequest(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+            CreateProjectResponse projectResponse = toolService.createProject(projectRequest);
+
+            //TODO create jpg image from rgb map
+            MultipartFile rgbMapCopyForConversion = new MockMultipartFile(
+                    "rgbMap",
+                    rgbMap.getOriginalFilename(),
+                    rgbMap.getContentType(),
+                    rgbMapBytes
+            );
+
+            List<MultipartFile> files = new ArrayList<>();
+            MultipartFile jpgRgbFile = convertTiffToJpg(rgbMapCopyForConversion);
+
+            files.add(jpgRgbFile);
+            files.add(rMap);
+            files.add(gMap);
+            files.add(reMap);
+            files.add(nirMap);
+
+            MultipartFile[] filesArray = files.toArray(new MultipartFile[0]);
+            toolService.projectFileUpload(projectResponse.getProject_id(), filesArray);
+
+            StartProjectResponse startProjectResponse = toolService.startProject(projectResponse.getProject_id());
+
+            ToolProject toolProject = new ToolProject();
+            toolProject.setToolProjectId(projectResponse.getProject_id());
+            toolProject.setToolTaskId(startProjectResponse.getTask_id());
+            toolProject.setTask(rgbTask);
+            toolProject.setStatus(ToolTaskStatus.PENDING);
+
+            toolService.createToolProject(toolProject);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(new CommonResponse(e.getMessage()));
+        }
+
         return ResponseEntity.ok(new CommonResponse("Success"));
     }
 
@@ -210,5 +270,108 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(tileList);
+    }
+
+    @GetMapping("/history/by/plantation/{id}")
+    public ResponseEntity<List<ProjectHistory>> getProjectHistoryByPlantationId(@PathVariable Long id) {
+        Plantation plantation = organizationService.getPlantationById(id);
+
+        if (plantation == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        long count = projectService.getProjectCountByPlantationId(id);
+        if (count == 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        List<ProjectHistory> projectHistoryList = projectService.getProjectHistoryByPlantationId(id);
+        if (projectHistoryList == null || projectHistoryList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(projectHistoryList);
+    }
+
+    @GetMapping("/total/yield/{id}")
+    public ResponseEntity<CommonResponse> getTotalYieldByProjectId(@PathVariable Long id) {
+        Project project = projectService.getProjectById(id);
+        if (project == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        String totalYield = projectService.getTotalYieldByProjectId(id);
+        return ResponseEntity.ok(new CommonResponse(totalYield));
+    }
+
+    @GetMapping("/total/stress-pct/{id}")
+    public ResponseEntity<CommonResponse> getTotalStressPctByProjectId(@PathVariable Long id) {
+        Project project = projectService.getProjectById(id);
+        if (project == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        String totalStressPct = projectService.getTotalStressPctByProjectId(id);
+        return ResponseEntity.ok(new CommonResponse(totalStressPct));
+    }
+
+    @GetMapping("/total/disease-pct/{id}")
+    public ResponseEntity<CommonResponse> getTotalDiseasePctByProjectId(@PathVariable Long id) {
+        Project project = projectService.getProjectById(id);
+        if (project == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        String totalDiseasePct = projectService.getTotalDiseasePctByProjectId(id);
+        return ResponseEntity.ok(new CommonResponse(totalDiseasePct));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<CommonResponse> deleteByProjectId(@PathVariable Long id) {
+        projectService.deleteProjectById(id);
+
+        return ResponseEntity.ok(new CommonResponse("Success"));
+    }
+
+    public MultipartFile convertTiffToJpg(MultipartFile tifFile) {
+        try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(tifFile.getInputStream())) {
+            Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tif");
+
+            if (!readers.hasNext()) {
+                throw new IOException("No TIFF reader found for .tif files");
+            }
+
+            ImageReader reader = readers.next();
+            reader.setInput(imageInputStream);
+
+            BufferedImage tifImage = reader.read(0);
+
+            BufferedImage rgbImage = new BufferedImage(
+                    tifImage.getWidth(),
+                    tifImage.getHeight(),
+                    BufferedImage.TYPE_INT_RGB
+            );
+            rgbImage.createGraphics().drawImage(tifImage, 0, 0, null);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            if (!ImageIO.write(rgbImage, "jpg", baos)) {
+                throw new IOException("JPG writer not available or failed");
+            }
+
+            byte[] jpgBytes = baos.toByteArray();
+
+            if (jpgBytes.length == 0) {
+                throw new IOException("Conversion to JPG failed, output is empty");
+            }
+
+            return new MockMultipartFile(
+                    "converted_image_D",
+                    "converted_image_D.JPG",
+                    "image/jpeg",
+                    jpgBytes
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("Error converting .tif to .JPG", e);
+        }
     }
 }

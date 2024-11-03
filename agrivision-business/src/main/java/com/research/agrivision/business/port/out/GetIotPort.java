@@ -12,4 +12,6 @@ public interface GetIotPort {
     List<IotReading> getIotReadingByTimePeriod(String time);
 
     String getEnvironmentData();
+
+    IotReading getLatestReading();
 }

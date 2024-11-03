@@ -6,4 +6,6 @@ public interface SaveProjectPort {
     Project createProject(Project project);
 
     Project updateProject(Project request);
+
+    void deleteProjectById(Long id);
 }

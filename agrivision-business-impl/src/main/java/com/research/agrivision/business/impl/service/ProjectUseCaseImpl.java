@@ -2,7 +2,7 @@ package com.research.agrivision.business.impl.service;
 
 import com.research.agrivision.business.entity.*;
 import com.research.agrivision.business.entity.imageTool.ToolReadings;
-import com.research.agrivision.business.entity.project.ProjectMaps;
+import com.research.agrivision.business.entity.project.ProjectHistory;
 import com.research.agrivision.business.enums.ProjectStatus;
 import com.research.agrivision.business.enums.TaskType;
 import com.research.agrivision.business.port.in.ProjectUseCase;
@@ -19,18 +19,21 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.List;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProjectUseCaseImpl implements ProjectUseCase {
@@ -150,6 +153,7 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     }
 
     @Override
+//    @Async
     public void updateProjectMaps(Long id, MultipartFile rgbMap) {
         Task rgbTask = getTaskPort.getTaskByProjectIdAndType(id, TaskType.RGB);
         if (rgbTask != null) {
@@ -188,6 +192,51 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     @Override
     public List<Tile> getAllTilesByProjectId(Long id) {
         return getTilePort.getAllTilesByProjectId(id);
+    }
+
+    @Override
+    public List<ProjectHistory> getProjectHistoryByPlantationId(Long id) {
+        return getProjectPort.getProjectHistoryByPlantationId(id);
+    }
+
+    @Override
+    public long getProjectCountByPlantationId(Long id) {
+        return getProjectPort.getProjectCountByPlantationId(id);
+    }
+
+    @Override
+    public String getTotalYield() {
+        return getTilePort.getTotalYield();
+    }
+
+    @Override
+    public String getTotalStressPct() {
+        return getTilePort.getTotalStressPct();
+    }
+
+    @Override
+    public String getTotalDiseasePct() {
+        return getTilePort.getTotalDiseasePct();
+    }
+
+    @Override
+    public String getTotalYieldByProjectId(Long id) {
+        return getTilePort.getTotalYieldByProjectId(id);
+    }
+
+    @Override
+    public String getTotalStressPctByProjectId(Long id) {
+        return getTilePort.getTotalStressPctByProjectId(id);
+    }
+
+    @Override
+    public String getTotalDiseasePctByProjectId(Long id) {
+        return getTilePort.getTotalDiseasePctByProjectId(id);
+    }
+
+    @Override
+    public void deleteProjectById(Long id) {
+        saveProjectPort.deleteProjectById(id);
     }
 
     private void generateTaskSignedUrl(Task task) {
@@ -242,8 +291,17 @@ public class ProjectUseCaseImpl implements ProjectUseCase {
     }
 
     private String convertTiffToPng(MultipartFile tifFile) {
-        try {
-            BufferedImage tifImage = ImageIO.read(tifFile.getInputStream());
+        try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(tifFile.getInputStream())) {
+            Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tif");
+
+            if (!readers.hasNext()) {
+                throw new IOException("No TIFF reader found for .tif files");
+            }
+
+            ImageReader reader = readers.next();
+            reader.setInput(imageInputStream);
+
+            BufferedImage tifImage = reader.read(0);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(tifImage, "png", baos);

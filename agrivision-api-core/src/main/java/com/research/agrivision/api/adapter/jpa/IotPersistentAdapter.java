@@ -104,4 +104,13 @@ public class IotPersistentAdapter implements SaveIotPort, GetIotPort {
     public String getEnvironmentData() {
         return iotClient.getEnvironmentData();
     }
+
+    @Override
+    public IotReading getLatestReading() {
+        Optional<com.research.agrivision.api.adapter.jpa.entity.IotReading> iotReading = iotReadingRepository.findFirstByOrderByIdDesc();
+        if (iotReading.isPresent()) {
+            return mapper.map(iotReading, com.research.agrivision.business.entity.IotReading.class);
+        }
+        return null;
+    }
 }

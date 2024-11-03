@@ -48,28 +48,28 @@ public class YieldUseCaseImpl implements YieldUseCase {
 
         double avgTemperature = calculateAverageTemperature(tileList);
         double temperatureDeviation = Math.abs(tile.getTemperature() - avgTemperature);
-        if (temperatureDeviation > maxDeviation) {
+        if (tile.getTemperature() > avgTemperature) {
             maxDeviation = temperatureDeviation;
             mostLikelyFactor = "Possible high temperature affecting yield.";
         }
 
         double avgHumidity = calculateAverageHumidity(tileList);
         double humidityDeviation = Math.abs(tile.getHumidity() - avgHumidity);
-        if (humidityDeviation > maxDeviation) {
+        if (tile.getHumidity() < avgHumidity) {
             maxDeviation = humidityDeviation;
             mostLikelyFactor = "Possible low humidity affecting yield.";
         }
 
         double avgUVLevel = calculateAverageUVLevel(tileList);
         double uvLevelDeviation = Math.abs(tile.getUvLevel() - avgUVLevel);
-        if (uvLevelDeviation > maxDeviation) {
+        if (tile.getUvLevel() > avgUVLevel) {
             maxDeviation = uvLevelDeviation;
             mostLikelyFactor = "Possible high UV level affecting yield.";
         }
 
         double avgSoilMoisture = calculateAverageSoilMoisture(tileList);
         double soilMoistureDeviation = Math.abs(tile.getSoilMoisture() - avgSoilMoisture);
-        if (soilMoistureDeviation > maxDeviation) {
+        if (tile.getSoilMoisture() < avgSoilMoisture) {
             maxDeviation = soilMoistureDeviation;
             mostLikelyFactor = "Possible low soil moisture affecting yield.";
         }
