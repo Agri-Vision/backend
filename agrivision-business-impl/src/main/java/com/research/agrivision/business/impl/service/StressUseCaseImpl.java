@@ -7,7 +7,7 @@ public class StressUseCaseImpl implements StressUseCase {
     @Override
     public String getStressByTileId(Tile tile) {
         if (tile.getStress() == null) tile.setStress("");
-        if (!"Stressed".equals(tile.getStress())) {
+        if (!"yes".equals(tile.getStress())) {
             return "No Stress Detected";
         }
 
@@ -29,19 +29,19 @@ public class StressUseCaseImpl implements StressUseCase {
     }
 
     private boolean isWaterStressDetected(double soilMoisture, double temperature, double humidity) {
-        return soilMoisture < 300.0 && temperature > 30.0 && humidity < 40.0;
+        return soilMoisture < 510.0 && temperature > 33.0 && humidity < 65.60;
     }
 
     private String generateSuggestions(double soilMoisture, double uvIndex) {
         StringBuilder suggestion = new StringBuilder();
 
-        if (soilMoisture < 30.0) {
-            double requiredIncrease = 30.0 - soilMoisture;
+        if (soilMoisture < 510.0) {
+            long requiredIncrease = Math.round(510.0f - soilMoisture);
             suggestion.append("Increase soil moisture by ").append(requiredIncrease).append("% through additional irrigation. ");
         }
 
-        if (uvIndex > 5.0) {
-            double requiredReduction = uvIndex - 5.0;
+        if (uvIndex > 1.0) {
+            long requiredReduction = Math.round(uvIndex - 1.0);
             suggestion.append("Reduce UV exposure by using shade cloth or protective coverings with approximately ")
                     .append((requiredReduction / uvIndex) * 100).append("% shading.");
         }

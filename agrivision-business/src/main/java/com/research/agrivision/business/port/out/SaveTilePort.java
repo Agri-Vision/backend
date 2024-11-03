@@ -9,4 +9,6 @@ public interface SaveTilePort {
     void createTile(ToolReadings toolReadings);
 
     void createTilesByTaskId(Long id, List<Tile> tileList);
+
+    void createSchedulerTileListByTask(Long id, List<Tile> tiles);
 }

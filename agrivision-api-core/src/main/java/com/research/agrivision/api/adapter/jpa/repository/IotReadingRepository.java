@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IotReadingRepository extends JpaRepository<IotReading, Long> {
@@ -24,4 +25,6 @@ public interface IotReadingRepository extends JpaRepository<IotReading, Long> {
             @Param("startOfMonth") LocalDate startOfMonth,
             @Param("endOfMonth") LocalDate endOfMonth
     );
+
+    Optional<IotReading> findFirstByOrderByIdDesc();
 }

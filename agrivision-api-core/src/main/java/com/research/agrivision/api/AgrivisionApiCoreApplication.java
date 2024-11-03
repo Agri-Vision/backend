@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
@@ -11,6 +12,7 @@ import java.util.concurrent.Executor;
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableFeignClients
+@EnableAsync
 public class AgrivisionApiCoreApplication {
 
 	public static void main(String[] args) {

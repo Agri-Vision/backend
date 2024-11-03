@@ -44,13 +44,13 @@ public class DiseaseUseCaseImpl implements DiseaseUseCase {
         healthScorePct = Double.parseDouble(formattedPct);
 
         if (healthScore > 0.75) {
-            return healthScorePct + "%" + " - " + "Not Vulnerable to Diseases";
+            return healthScorePct + "%" + " - " + "Low Vulnerability to Diseases";
         } else if (healthScore >= 0.5) {
-            return healthScorePct + "%" + " - " + "Mildly Vulnerable to Diseases";
+            return healthScorePct + "%" + " - " + "Moderate Vulnerability to Diseases";
         } else if (healthScore >= 0.25){
             return healthScorePct + "%" + " - " + "Vulnerable to Diseases";
         } else {
-            return healthScorePct + "%" + " - " + "Severely Vulnerable to Diseases";
+            return healthScorePct + "%" + " - " + "High Vulnerability to Diseases";
         }
     }
 }
