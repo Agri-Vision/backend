@@ -2,9 +2,9 @@ server:
   port: 8080
 spring:
   datasource:
-    url: jdbc:postgresql://asqorrrtd2.m45t3jg8lq.tsdb.cloud.timescale.com:36605/tsdb?sslmode=require
+    url: jdbc:postgresql://ms63mgb5d1.qwpxwnmhw5.tsdb.cloud.timescale.com:32813/tsdb?sslmode=require
     username: tsdbadmin
-    password: cml11blngbjg4cg9
+    password: jh3bhf33zghseb41
     driverClassName: org.postgresql.Driver
   http:
     converters.preferred-json-mapper: jackson
